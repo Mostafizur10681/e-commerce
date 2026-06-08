@@ -7,6 +7,12 @@
     "originalPrice": 150,
     "unit": "1 kg",
     "image": "https://picsum.photos/seed/apple/400/400",
+    "images": [
+      "https://picsum.photos/seed/apple/400/400",
+      "https://picsum.photos/seed/apple2/400/400",
+      "https://picsum.photos/seed/apple3/400/400",
+      "https://picsum.photos/seed/apple4/400/400"
+    ],
     "rating": 4.5,
     "badge": "Sale",
     "description": "Crisp, juicy fresh red apples, perfect for snacking and baking.",
@@ -21,6 +27,12 @@
     "originalPrice": null,
     "unit": "1 dozen",
     "image": "https://picsum.photos/seed/banana/400/400",
+    "images": [
+      "https://picsum.photos/seed/banana/400/400",
+      "https://picsum.photos/seed/banana2/400/400",
+      "https://picsum.photos/seed/banana3/400/400",
+      "https://picsum.photos/seed/banana4/400/400"
+    ],
     "rating": 4.8,
     "badge": "Organic",
     "description": "Ripe organic bananas, rich in potassium and flavor.",
@@ -35,6 +47,12 @@
     "originalPrice": 110,
     "unit": "12 pcs",
     "image": "https://picsum.photos/seed/eggs/400/400",
+    "images": [
+      "https://picsum.photos/seed/eggs/400/400",
+      "https://picsum.photos/seed/eggs2/400/400",
+      "https://picsum.photos/seed/eggs3/400/400",
+      "https://picsum.photos/seed/eggs4/400/400"
+    ],
     "rating": 4.6,
     "badge": "Sale",
     "description": "Free-range farm fresh eggs, high quality protein.",
@@ -49,6 +67,12 @@
     "originalPrice": null,
     "unit": "1 loaf",
     "image": "https://picsum.photos/seed/bread/400/400",
+    "images": [
+      "https://picsum.photos/seed/bread/400/400",
+      "https://picsum.photos/seed/bread2/400/400",
+      "https://picsum.photos/seed/bread3/400/400",
+      "https://picsum.photos/seed/bread4/400/400"
+    ],
     "rating": 4.3,
     "badge": null,
     "description": "Healthy whole wheat bread, soft and nutritious.",
@@ -63,6 +87,12 @@
     "originalPrice": 80,
     "unit": "1 liter",
     "image": "https://picsum.photos/seed/milk/400/400",
+    "images": [
+      "https://picsum.photos/seed/milk/400/400",
+      "https://picsum.photos/seed/milk2/400/400",
+      "https://picsum.photos/seed/milk3/400/400",
+      "https://picsum.photos/seed/milk4/400/400"
+    ],
     "rating": 4.7,
     "badge": "Sale",
     "description": "Pure fresh milk, rich in calcium.",
@@ -77,9 +107,15 @@
     "originalPrice": null,
     "unit": "500 g",
     "image": "https://picsum.photos/seed/broccoli/400/400",
+    "images": [
+      "https://picsum.photos/seed/broccoli/400/400",
+      "https://picsum.photos/seed/broccoli2/400/400",
+      "https://picsum.photos/seed/broccoli3/400/400",
+      "https://picsum.photos/seed/broccoli4/400/400"
+    ],
     "rating": 4.4,
     "badge": "Organic",
-    "description": "Fresh green broccoli, perfect for steaming or stir‑fry.",
+    "description": "Fresh green broccoli, perfect for steaming or stir-fry.",
     "stock": 20,
     "reviews": []
   },
@@ -91,9 +127,15 @@
     "originalPrice": 160,
     "unit": "1 liter",
     "image": "https://picsum.photos/seed/oj/400/400",
+    "images": [
+      "https://picsum.photos/seed/oj/400/400",
+      "https://picsum.photos/seed/oj2/400/400",
+      "https://picsum.photos/seed/oj3/400/400",
+      "https://picsum.photos/seed/oj4/400/400"
+    ],
     "rating": 4.2,
     "badge": "Sale",
-    "description": "Cold‑pressed orange juice, no added sugar.",
+    "description": "Cold-pressed orange juice, no added sugar.",
     "stock": 15,
     "reviews": []
   },
@@ -105,6 +147,12 @@
     "originalPrice": null,
     "unit": "200 g",
     "image": "https://picsum.photos/seed/chips/400/400",
+    "images": [
+      "https://picsum.photos/seed/chips/400/400",
+      "https://picsum.photos/seed/chips2/400/400",
+      "https://picsum.photos/seed/chips3/400/400",
+      "https://picsum.photos/seed/chips4/400/400"
+    ],
     "rating": 4.0,
     "badge": null,
     "description": "Crispy salted potato chips for snack time.",
