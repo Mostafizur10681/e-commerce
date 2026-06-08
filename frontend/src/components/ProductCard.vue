@@ -1,5 +1,5 @@
 <template>
-  <div class="card overflow-hidden group" @click="goToDetail" style="cursor:pointer;">
+  <div id="n8k2x1" class="card overflow-hidden group" @click="goToDetail" style="cursor:pointer;">
     <!-- Image -->
     <div class="relative overflow-hidden">
       <img :src="product.image" :alt="product.name"
@@ -38,10 +38,9 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from 'vue';
 import { useRouter } from 'vue-router';
 
-defineProps({
+const props = defineProps({
   product: { type: Object, required: true }
 });
 
@@ -49,6 +48,7 @@ defineEmits(['addToCart']);
 
 const router = useRouter();
 function goToDetail() {
-  router.push({ name: 'ProductDetails', params: { id: product.id } });
+  // id="r2m9qz"
+  router.push({ name: 'ProductDetails', params: { id: props.product.id } });
 }
 </script>
