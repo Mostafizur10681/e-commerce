@@ -24,11 +24,19 @@
 import { ref, computed } from 'vue';
 import ProductCard from '../components/ProductCard.vue';
 import products from '../data/products.json';
+import { useCartStore } from '../stores/cartStore';
+import { useToastStore } from '../stores/toastStore';
+
+const cartStore = useCartStore();
+const toastStore = useToastStore();
 
 const activeFilter = ref('All');
 const allCategories = ['All', ...new Set(products.map(p => p.category))];
 const filteredProducts = computed(() =>
   activeFilter.value === 'All' ? products : products.filter(p => p.category === activeFilter.value)
 );
-const handleAdd = (product) => { alert(`${product.name} added to cart!`); };
+const handleAdd = (product) => {
+  cartStore.addToCart(product);
+  toastStore.show('Successfully product added');
+};
 </script>

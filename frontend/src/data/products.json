@@ -8,7 +8,10 @@
     "unit": "1 kg",
     "image": "https://picsum.photos/seed/apple/400/400",
     "rating": 4.5,
-    "badge": "Sale"
+    "badge": "Sale",
+    "description": "Crisp, juicy fresh red apples, perfect for snacking and baking.",
+    "stock": 25,
+    "reviews": []
   },
   {
     "id": 2,
@@ -19,7 +22,10 @@
     "unit": "1 dozen",
     "image": "https://picsum.photos/seed/banana/400/400",
     "rating": 4.8,
-    "badge": "Organic"
+    "badge": "Organic",
+    "description": "Ripe organic bananas, rich in potassium and flavor.",
+    "stock": 30,
+    "reviews": []
   },
   {
     "id": 3,
@@ -30,7 +36,10 @@
     "unit": "12 pcs",
     "image": "https://picsum.photos/seed/eggs/400/400",
     "rating": 4.6,
-    "badge": "Sale"
+    "badge": "Sale",
+    "description": "Free-range farm fresh eggs, high quality protein.",
+    "stock": 40,
+    "reviews": []
   },
   {
     "id": 4,
@@ -41,7 +50,10 @@
     "unit": "1 loaf",
     "image": "https://picsum.photos/seed/bread/400/400",
     "rating": 4.3,
-    "badge": null
+    "badge": null,
+    "description": "Healthy whole wheat bread, soft and nutritious.",
+    "stock": 35,
+    "reviews": []
   },
   {
     "id": 5,
@@ -52,7 +64,10 @@
     "unit": "1 liter",
     "image": "https://picsum.photos/seed/milk/400/400",
     "rating": 4.7,
-    "badge": "Sale"
+    "badge": "Sale",
+    "description": "Pure fresh milk, rich in calcium.",
+    "stock": 50,
+    "reviews": []
   },
   {
     "id": 6,
@@ -63,7 +78,10 @@
     "unit": "500 g",
     "image": "https://picsum.photos/seed/broccoli/400/400",
     "rating": 4.4,
-    "badge": "Organic"
+    "badge": "Organic",
+    "description": "Fresh green broccoli, perfect for steaming or stir‑fry.",
+    "stock": 20,
+    "reviews": []
   },
   {
     "id": 7,
@@ -74,7 +92,10 @@
     "unit": "1 liter",
     "image": "https://picsum.photos/seed/oj/400/400",
     "rating": 4.2,
-    "badge": "Sale"
+    "badge": "Sale",
+    "description": "Cold‑pressed orange juice, no added sugar.",
+    "stock": 15,
+    "reviews": []
   },
   {
     "id": 8,
@@ -85,6 +106,9 @@
     "unit": "200 g",
     "image": "https://picsum.photos/seed/chips/400/400",
     "rating": 4.0,
-    "badge": null
+    "badge": null,
+    "description": "Crispy salted potato chips for snack time.",
+    "stock": 60,
+    "reviews": []
   }
 ]

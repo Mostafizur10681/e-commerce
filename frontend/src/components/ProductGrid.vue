@@ -13,8 +13,14 @@
 <script setup>
 import ProductCard from './ProductCard.vue';
 import products from '../data/products.json';
+import { useCartStore } from '../stores/cartStore';
+import { useToastStore } from '../stores/toastStore';
+
+const cartStore = useCartStore();
+const toastStore = useToastStore();
 
 const handleAdd = (product) => {
-  alert(`${product.name} added to cart!`);
+  cartStore.addToCart(product);
+  toastStore.show('Successfully product added');
 };
 </script>
