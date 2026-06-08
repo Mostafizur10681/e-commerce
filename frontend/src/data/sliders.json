@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "title": "Fresh Vegetables",
+    "subtitle": "Organic & locally sourced",
+    "image": "https://picsum.photos/seed/slider1/1200/400",
+    "ctaText": "Shop Now",
+    "ctaLink": "/shop"
+  },
+  {
+    "id": 2,
+    "title": "Seasonal Fruits",
+    "subtitle": "Sweet and juicy",
+    "image": "https://picsum.photos/seed/slider2/1200/400",
+    "ctaText": "Explore",
+    "ctaLink": "/shop"
+  },
+  {
+    "id": 3,
+    "title": "Dairy Delights",
+    "subtitle": "Fresh milk, cheese & more",
+    "image": "https://picsum.photos/seed/slider3/1200/400",
+    "ctaText": "Browse",
+    "ctaLink": "/shop"
+  }
+]

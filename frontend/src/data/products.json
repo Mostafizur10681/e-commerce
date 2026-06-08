@@ -1,0 +1,90 @@
+[
+  {
+    "id": 1,
+    "name": "Fresh Red Apples",
+    "category": "Fruits",
+    "price": 120,
+    "originalPrice": 150,
+    "unit": "1 kg",
+    "image": "https://picsum.photos/seed/apple/400/400",
+    "rating": 4.5,
+    "badge": "Sale"
+  },
+  {
+    "id": 2,
+    "name": "Organic Bananas",
+    "category": "Fruits",
+    "price": 60,
+    "originalPrice": null,
+    "unit": "1 dozen",
+    "image": "https://picsum.photos/seed/banana/400/400",
+    "rating": 4.8,
+    "badge": "Organic"
+  },
+  {
+    "id": 3,
+    "name": "Farm Fresh Eggs",
+    "category": "Dairy",
+    "price": 95,
+    "originalPrice": 110,
+    "unit": "12 pcs",
+    "image": "https://picsum.photos/seed/eggs/400/400",
+    "rating": 4.6,
+    "badge": "Sale"
+  },
+  {
+    "id": 4,
+    "name": "Whole Wheat Bread",
+    "category": "Bakery",
+    "price": 55,
+    "originalPrice": null,
+    "unit": "1 loaf",
+    "image": "https://picsum.photos/seed/bread/400/400",
+    "rating": 4.3,
+    "badge": null
+  },
+  {
+    "id": 5,
+    "name": "Fresh Milk",
+    "category": "Dairy",
+    "price": 70,
+    "originalPrice": 80,
+    "unit": "1 liter",
+    "image": "https://picsum.photos/seed/milk/400/400",
+    "rating": 4.7,
+    "badge": "Sale"
+  },
+  {
+    "id": 6,
+    "name": "Green Broccoli",
+    "category": "Vegetables",
+    "price": 85,
+    "originalPrice": null,
+    "unit": "500 g",
+    "image": "https://picsum.photos/seed/broccoli/400/400",
+    "rating": 4.4,
+    "badge": "Organic"
+  },
+  {
+    "id": 7,
+    "name": "Orange Juice",
+    "category": "Beverages",
+    "price": 130,
+    "originalPrice": 160,
+    "unit": "1 liter",
+    "image": "https://picsum.photos/seed/oj/400/400",
+    "rating": 4.2,
+    "badge": "Sale"
+  },
+  {
+    "id": 8,
+    "name": "Potato Chips",
+    "category": "Snacks",
+    "price": 45,
+    "originalPrice": null,
+    "unit": "200 g",
+    "image": "https://picsum.photos/seed/chips/400/400",
+    "rating": 4.0,
+    "badge": null
+  }
+]
