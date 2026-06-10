@@ -77,6 +77,7 @@ const navLinks = [
   { path: '/shop', label: 'Shop' },
   { path: '/about', label: 'About' },
   { path: '/contact', label: 'Contact' },
+  { path: '/faq', label: 'FAQ' },
 ];
 </script>
 

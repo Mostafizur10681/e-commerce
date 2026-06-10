@@ -28,7 +28,10 @@
       <div>
         <h3 class="text-white font-bold mb-4">Customer Service</h3>
         <ul class="space-y-2">
-          <li v-for="item in serviceLinks" :key="item"><a href="#" class="text-gray-400 hover:text-primary transition-colors text-sm">{{ item }}</a></li>
+            <li v-for="item in serviceLinks" :key="item">
+              <RouterLink v-if="item === 'FAQ'" to="/faq" class="text-gray-400 hover:text-primary transition-colors text-sm">{{ item }}</RouterLink>
+              <a v-else href="#" class="text-gray-400 hover:text-primary transition-colors text-sm">{{ item }}</a>
+            </li>
         </ul>
       </div>
       <!-- Contact -->

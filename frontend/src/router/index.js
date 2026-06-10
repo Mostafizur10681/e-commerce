@@ -13,6 +13,7 @@ const routes = [
   { path: '/category/:categoryName', name: 'CategoryProducts', component: () => import('../pages/CategoryProductsPage.vue') },
   { path: '/cart', name: 'Cart', component: () => import('../pages/Cart.vue') },
   { path: '/contact', name: 'Contact', component: Contact },
+  { path: '/faq', name: 'FAQ', component: () => import('../pages/FaqPage.vue') },
 ];
 
 const router = createRouter({
