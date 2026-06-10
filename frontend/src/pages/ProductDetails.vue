@@ -137,13 +137,14 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import ProductCard from '../components/ProductCard.vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useCartStore } from '../stores/cartStore';
 import { useProductStore } from '../stores/productStore';
 import { useReviewStore } from '../stores/reviewStore';
 import { useToastStore } from '../stores/toastStore';
 
 const route = useRoute();
+const router = useRouter();
 const productId = Number(route.params.id);
 
 const productStore = useProductStore();
@@ -197,10 +198,10 @@ function addToCart() {
 }
 
 function buyNow() {
-  // Simple placeholder: show toast; integrate checkout navigation if route exists
-  toast.show('Buy Now clicked');
-  // Example navigation (uncomment if checkout route exists)
-  // router.push({ name: 'Checkout' });
+  // Add product to cart and navigate to checkout
+  cartStore.addToCart(product.value);
+  toast.show('Product added to cart');
+  router.push({ name: 'Checkout' });
 }
 
 function submitReview() {

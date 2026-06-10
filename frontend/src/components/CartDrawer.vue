@@ -48,7 +48,7 @@
             <span class="font-medium text-gray-600 dark:text-gray-300">Total</span>
             <span class="text-xl font-bold text-primary">৳{{ totalPrice.toFixed(2) }}</span>
           </div>
-          <button class="w-full bg-primary hover:bg-primary-dark text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all duration-200 hover:-translate-y-0.5 flex justify-center items-center gap-2"
+          <button type="button" @click="goToCheckout" class="w-full bg-primary hover:bg-primary-dark text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all duration-200 hover:-translate-y-0.5 flex justify-center items-center gap-2"
             :disabled="cartItems.length === 0">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             Checkout Now
@@ -64,10 +64,12 @@ import { computed, onMounted, onUnmounted } from 'vue';
 import { useCartStore } from '../stores/cartStore';
 import { useUiStore } from '../stores/uiStore';
 import { useToastStore } from '../stores/toastStore';
+import { useRouter } from 'vue-router';
 
 const cartStore = useCartStore();
 const uiStore = useUiStore();
 const toast = useToastStore();
+const router = useRouter();
 
 const cartItems = computed(() => cartStore.items);
 const totalPrice = computed(() => cartStore.totalPrice);
@@ -81,6 +83,11 @@ function decrease(productId) {
 function remove(productId) {
   cartStore.removeFromCart(productId);
   toast.show('Item removed from cart');
+}
+
+function goToCheckout() {
+  console.log('checkout clicked');
+  router.push('/checkout');
 }
 
 function handleKeydown(e) {

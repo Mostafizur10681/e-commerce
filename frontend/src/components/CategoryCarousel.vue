@@ -5,7 +5,8 @@
       <div class="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide">
         <div v-for="cat in categories" :key="cat.id"
           class="flex-shrink-0 snap-center group cursor-pointer"
-          data-aos="zoom-in" :data-aos-delay="cat.id * 100">
+          data-aos="zoom-in" :data-aos-delay="cat.id * 100"
+          @click="goToCategory(cat.name)">
           <div class="w-28 h-28 sm:w-36 sm:h-36 rounded-2xl overflow-hidden shadow-md group-hover:shadow-xl transition-all duration-300 group-hover:-translate-y-1 ring-2 ring-transparent group-hover:ring-primary">
             <img :src="cat.image" :alt="cat.name" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
           </div>
@@ -18,6 +19,12 @@
 
 <script setup>
 import categories from '../data/categories.json';
+import { useRouter } from 'vue-router';
+const router = useRouter();
+function goToCategory(catName) {
+  router.push({ name: 'CategoryProducts', params: { categoryName: catName } });
+}
+
 </script>
 
 <style scoped>

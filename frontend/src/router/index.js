@@ -10,7 +10,9 @@ const routes = [
   { path: '/shop', name: 'Shop', component: Shop },
   { path: '/about', name: 'About', component: About },
   { path: '/product/:id', name: 'ProductDetails', component: () => import('../pages/ProductDetails.vue') },
+  { path: '/category/:categoryName', name: 'CategoryProducts', component: () => import('../pages/CategoryProductsPage.vue') },
   { path: '/cart', name: 'Cart', component: () => import('../pages/Cart.vue') },
+  { path: '/contact', name: 'Contact', component: Contact },
 ];
 
 const router = createRouter({
