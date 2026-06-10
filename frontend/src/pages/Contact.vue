@@ -1,6 +1,6 @@
 <template>
   <section class="max-w-7xl mx-auto py-12 px-4 md:px-8 lg:px-12">
-    <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-8 text-center">Contact Us</h1>
+    <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-dark mb-8 text-center">Contact Us</h1>
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
       <!-- Left: Contact Image -->
       <div class="relative rounded-xl overflow-hidden shadow-lg group">
@@ -58,7 +58,7 @@
 
     <!-- Optional Recent Messages -->
     <section v-if="recentMessages.length" class="mt-12">
-      <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4">Recent Messages</h2>
+      <h2 class="text-2xl font-semibold text-gray-800 dark:text-dark mb-4">Recent Messages</h2>
       <ul class="space-y-3">
         <li v-for="msg in recentMessages" :key="msg.createdAt" class="bg-white dark:bg-gray-800 rounded-md p-4 shadow">
           <p class="font-medium text-gray-900 dark:text-gray-100">{{ msg.name }} – {{ msg.subject }}</p>
