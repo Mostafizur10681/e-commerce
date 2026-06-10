@@ -1,6 +1,6 @@
 <template>
   <section class="max-w-7xl mx-auto py-12 px-4 md:px-8 lg:px-12">
-    <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-dark mb-8 text-center">Contact Us</h1>
+    <h1 class="text-4xl font-bold text-primary mb-8 text-center">Contact Us</h1>
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
       <!-- Left: Contact Image -->
       <div class="relative rounded-xl overflow-hidden shadow-lg group">
@@ -49,7 +49,7 @@
           <p v-if="errors.message" class="text-red-600 text-sm mt-1">{{ errors.message }}</p>
         </div>
         <button type="submit" :disabled="isSubmitting"
-                class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                class="w-full bg-primary hover:bg-indigo-700 text-white font-semibold py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
           <span v-if="!isSubmitting">Send Message</span>
           <span v-else>Sending…</span>
         </button>
@@ -58,7 +58,7 @@
 
     <!-- Optional Recent Messages -->
     <section v-if="recentMessages.length" class="mt-12">
-      <h2 class="text-2xl font-semibold text-gray-800 dark:text-dark mb-4">Recent Messages</h2>
+      <h2 class="text-2xl font-semibold text-primary mb-4">Recent Messages</h2>
       <ul class="space-y-3">
         <li v-for="msg in recentMessages" :key="msg.createdAt" class="bg-white dark:bg-gray-800 rounded-md p-4 shadow">
           <p class="font-medium text-gray-900 dark:text-gray-100">{{ msg.name }} – {{ msg.subject }}</p>

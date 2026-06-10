@@ -1,4 +1,5 @@
 <template>
+<div class="p-10 text-center text-primary">Checkout Page Working</div>
   <section class="max-w-7xl mx-auto py-12 px-4 md:px-8 lg:px-12">
     <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-12 text-center">Checkout</h1>
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
