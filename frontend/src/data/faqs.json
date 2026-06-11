@@ -1,21 +1,31 @@
 [
   {
+    "id": 1,
+    "category": "General",
     "question": "What is FreshMart?",
     "answer": "FreshMart is an online grocery store offering a wide range of fresh produce, household items, and more."
   },
   {
+    "id": 2,
+    "category": "Orders",
     "question": "How can I place an order?",
     "answer": "Browse products, add them to your cart, and proceed to checkout. Fill in your billing details and click ‘Place Order’."
   },
   {
+    "id": 3,
+    "category": "Payments",
     "question": "What payment methods are accepted?",
     "answer": "We accept credit/debit cards, mobile money, and online banking."
   },
   {
+    "id": 4,
+    "category": "Delivery",
     "question": "Do you offer delivery?",
     "answer": "Yes, we provide home delivery across Bangladesh with free delivery on orders over ৳500."
   },
   {
+    "id": 5,
+    "category": "Account",
     "question": "Can I track my order?",
     "answer": "After placing an order, you can track its status in the ‘Orders’ section of your account."
   }
