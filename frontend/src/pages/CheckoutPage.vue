@@ -1,93 +1,240 @@
 <template>
-<div class="p-10 text-center text-primary">Checkout Page Working</div>
-  <section class="max-w-7xl mx-auto py-12 px-4 md:px-8 lg:px-12">
-    <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-12 text-center">Checkout</h1>
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-      <!-- Billing Details Form -->
-      <form @submit.prevent="placeOrder" class="space-y-6 bg-white dark:bg-gray-800 rounded-xl shadow-xl p-8">
-        <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4">Billing Details</h2>
+  <div class="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto">
 
-        <div>
-          <label for="fullName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name</label>
-          <input v-model="form.fullName" id="fullName" type="text" required
-                 class="w-full rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-5  dark:bg-gray-700 dark:text-gray-100 px-3 py-2" />
-        </div>
-
-        <div>
-          <label for="phone" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone Number</label>
-          <input v-model="form.phone" id="phone" type="tel" required
-                 class="w-full rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-5  dark:bg-gray-700 dark:text-gray-100 px-3 py-2" />
-        </div>
-
-        <div>
-          <label for="address" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Address</label>
-          <input v-model="form.address" id="address" type="text" required
-                 class="w-full rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-5  dark:bg-gray-700 dark:text-gray-100 px-3 py-2" />
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div>
-        <label for="district" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">District</label>
-        <select v-model="form.district" id="district" required
-                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-5 dark:bg-gray-700 dark:text-gray-100 px-3 py-2">
-          <option value="" disabled>Select a district</option>
-          <option v-for="dist in districts" :key="dist" :value="dist">{{ dist }}</option>
-        </select>
+      <!-- Page heading -->
+      <div class="text-center mb-10">
+        <h1 class="section-title">Checkout</h1>
+        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Complete your order details below</p>
       </div>
-      <div>
-        <label for="thana" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Thana</label>
-        <select v-model="form.thana" id="thana" :disabled="!form.district" required
-                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-5 dark:bg-gray-700 dark:text-gray-100 px-3 py-2">
-          <option value="" disabled>Select District First</option>
-          <option v-for="th in filteredThanas" :key="th" :value="th">{{ th }}</option>
-        </select>
-      </div>
-          <div>
-            <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email (optional)</label>
-            <input v-model="form.email" id="email" type="email"
-                   class="w-full rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-5  dark:bg-gray-700 dark:text-gray-100 px-3 py-2" />
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 xl:gap-12 items-start">
+
+        <!-- ══════════════════════════════════
+             LEFT: Billing Details Form
+             ══════════════════════════════════ -->
+        <form @submit.prevent="placeOrder" class="bg-white dark:bg-gray-900 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 sm:p-8 space-y-5 transition-colors duration-300">
+
+          <!-- Section header -->
+          <div class="flex items-center gap-3 mb-2">
+            <span class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+              </svg>
+            </span>
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Billing Details</h2>
           </div>
-        </div>
 
-        <button type="submit"
-                :disabled="isLoading"
-                class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold py-3 rounded-lg shadow-md transition-all duration-200 transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed">
-          <span v-if="!isLoading">Place Order</span>
-          <span v-else>Processing…</span>
-        </button>
-      </form>
+          <!-- Full Name -->
+          <div>
+            <label for="fullName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+              Full Name <span class="text-red-500">*</span>
+            </label>
+            <input
+              v-model="form.fullName"
+              id="fullName"
+              type="text"
+              required
+              placeholder="John Doe"
+              class="w-full rounded-xl px-4 py-3 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-200"
+            />
+          </div>
 
-      <!-- Order Summary -->
-      <aside id="order-summary" class="lg:sticky lg:top-12 bg-white dark:bg-gray-800 rounded-xl shadow-xl p-8 max-h-[calc(100vh-4rem)] overflow-y-auto">
-        <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-6">Order Summary</h2>
-        <ul class="divide-y divide-gray-200 dark:divide-gray-700">
-          <li v-for="item in cartItems" :key="item.id" class="py-4 flex items-center">
-            <img :src="item.product.image" :alt="item.product.name"
-                 class="w-12 h-12 rounded object-cover mr-4 flex-shrink-0" />
-            <div class="flex-1">
-              <p class="text-gray-800 dark:text-gray-100 font-medium">{{ item.product.name }}</p>
-              <p class="text-sm text-gray-500 dark:text-gray-400">₹{{ item.product.price.toFixed(2) }} each</p>
+          <!-- Phone -->
+          <div>
+            <label for="phone" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+              Phone Number <span class="text-red-500">*</span>
+            </label>
+            <input
+              v-model="form.phone"
+              id="phone"
+              type="tel"
+              required
+              placeholder="+880 1700-000000"
+              class="w-full rounded-xl px-4 py-3 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-200"
+            />
+          </div>
+
+          <!-- Address -->
+          <div>
+            <label for="address" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+              Address <span class="text-red-500">*</span>
+            </label>
+            <input
+              v-model="form.address"
+              id="address"
+              type="text"
+              required
+              placeholder="House #, Road #, Area"
+              class="w-full rounded-xl px-4 py-3 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-200"
+            />
+          </div>
+
+          <!-- District + Thana (2 cols) -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label for="district" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                District <span class="text-red-500">*</span>
+              </label>
+              <select
+                v-model="form.district"
+                id="district"
+                required
+                class="w-full rounded-xl px-4 py-3 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-200 appearance-none cursor-pointer"
+              >
+                <option value="" disabled>Select a district</option>
+                <option v-for="dist in districts" :key="dist" :value="dist">{{ dist }}</option>
+              </select>
             </div>
-            <div class="flex items-center space-x-2">
-              <span class="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm font-medium text-gray-800 dark:text-gray-100">
-                x{{ item.quantity }}
-              </span>
-              <span class="text-gray-900 dark:text-gray-100 font-medium">
-                ₹{{ (item.product.price * item.quantity).toFixed(2) }}
-              </span>
+            <div>
+              <label for="thana" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                Thana <span class="text-red-500">*</span>
+              </label>
+              <select
+                v-model="form.thana"
+                id="thana"
+                :disabled="!form.district"
+                required
+                class="w-full rounded-xl px-4 py-3 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-200 appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <option value="" disabled>Select District First</option>
+                <option v-for="th in filteredThanas" :key="th" :value="th">{{ th }}</option>
+              </select>
             </div>
-          </li>
-        </ul>
-        <div class="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4 flex justify-between items-center">
-          <span class="text-xl font-bold text-gray-900 dark:text-gray-100">Total</span>
-          <span class="text-2xl font-extrabold text-indigo-600 dark:text-indigo-400">₹{{ totalPrice.toFixed(2) }}</span>
-        </div>
-<button @click="downloadPDF" class="mt-4 w-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 py-2 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition">
-  Download Order PDF
-</button>
-      </aside>
+          </div>
+
+          <!-- Email (optional) -->
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+              Email <span class="text-xs text-gray-400">(optional)</span>
+            </label>
+            <input
+              v-model="form.email"
+              id="email"
+              type="email"
+              placeholder="you@example.com"
+              class="w-full rounded-xl px-4 py-3 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-200"
+            />
+          </div>
+
+          <!-- Payment method note -->
+          <div class="flex items-start gap-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700/40 rounded-xl p-4">
+            <svg class="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+            </svg>
+            <div>
+              <p class="text-xs font-semibold text-amber-700 dark:text-amber-300">Cash on Delivery</p>
+              <p class="text-xs text-amber-600 dark:text-amber-400 mt-0.5">Pay when your order arrives at your door.</p>
+            </div>
+          </div>
+
+          <!-- Place Order Button -->
+          <button
+            type="submit"
+            :disabled="isLoading"
+            class="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white font-semibold py-3.5 rounded-xl text-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none mt-2"
+          >
+            <template v-if="!isLoading">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+              </svg>
+              Place Order
+            </template>
+            <template v-else>
+              <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+              </svg>
+              Processing…
+            </template>
+          </button>
+        </form>
+
+        <!-- ══════════════════════════════════
+             RIGHT: Order Summary
+             ══════════════════════════════════ -->
+        <aside
+          id="order-summary"
+          class="lg:sticky lg:top-28 bg-white dark:bg-gray-900 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 sm:p-8 max-h-[calc(100vh-8rem)] overflow-y-auto transition-colors duration-300"
+        >
+          <!-- Header -->
+          <div class="flex items-center gap-3 mb-6">
+            <span class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+              </svg>
+            </span>
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Order Summary</h2>
+            <span class="ml-auto text-xs font-medium px-2.5 py-1 rounded-full bg-primary/10 text-primary">
+              {{ cartItems.length }} item{{ cartItems.length !== 1 ? 's' : '' }}
+            </span>
+          </div>
+
+          <!-- Empty cart state -->
+          <div v-if="cartItems.length === 0" class="text-center py-10">
+            <div class="text-4xl mb-3">🛒</div>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Your cart is empty.</p>
+          </div>
+
+          <!-- Cart items list -->
+          <ul v-else class="divide-y divide-gray-100 dark:divide-gray-800">
+            <li v-for="item in cartItems" :key="item.id" class="py-4 flex items-center gap-3">
+              <img
+                :src="item.product.image || item.product.images?.[0]"
+                :alt="item.product.name"
+                class="w-14 h-14 rounded-xl object-cover flex-shrink-0 border border-gray-100 dark:border-gray-700"
+              />
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate">{{ item.product.name }}</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">৳{{ item.product.price.toFixed(2) }} each</p>
+              </div>
+              <div class="flex flex-col items-end gap-1 flex-shrink-0">
+                <span class="text-xs px-2 py-0.5 bg-gray-100 dark:bg-gray-800 rounded-full text-gray-600 dark:text-gray-300 font-medium">
+                  × {{ item.quantity }}
+                </span>
+                <span class="text-sm font-bold text-gray-900 dark:text-white">
+                  ৳{{ (item.product.price * item.quantity).toFixed(2) }}
+                </span>
+              </div>
+            </li>
+          </ul>
+
+          <!-- Subtotal / Delivery / Total -->
+          <div class="mt-4 border-t border-gray-100 dark:border-gray-800 pt-4 space-y-2.5">
+            <div class="flex justify-between text-sm text-gray-600 dark:text-gray-400">
+              <span>Subtotal</span>
+              <span>৳{{ totalPrice.toFixed(2) }}</span>
+            </div>
+            <div class="flex justify-between text-sm text-gray-600 dark:text-gray-400">
+              <span>Delivery</span>
+              <span class="text-green-600 dark:text-green-400 font-medium">Free</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-gray-200 dark:border-gray-700">
+              <span class="text-base font-bold text-gray-900 dark:text-white">Total</span>
+              <span class="text-xl font-extrabold text-primary">৳{{ totalPrice.toFixed(2) }}</span>
+            </div>
+          </div>
+
+          <!-- Download PDF -->
+          <button
+            @click="downloadPDF"
+            class="mt-6 w-full flex items-center justify-center gap-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-medium py-2.5 rounded-xl text-sm transition-all duration-200 border border-gray-200 dark:border-gray-700"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+            Download Order PDF
+          </button>
+
+          <!-- Trust badges -->
+          <div class="mt-5 flex items-center justify-center gap-4 text-xs text-gray-400 dark:text-gray-500">
+            <span class="flex items-center gap-1">🔒 Secure Checkout</span>
+            <span class="flex items-center gap-1">🚚 Free Delivery</span>
+          </div>
+        </aside>
+      </div>
     </div>
-  </section>
+  </div>
 </template>
 
 <script setup>
@@ -182,11 +329,5 @@ const downloadPDF = async () => {
 };</script>
 
 <style scoped>
-/* Glassmorphism effect preserved */
-section,
-form,
-aside {
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: saturate(180%) blur(12px);
-}
+/* Remove old glassmorphism override that broke dark mode */
 </style>
