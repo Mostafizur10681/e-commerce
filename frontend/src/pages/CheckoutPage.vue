@@ -119,7 +119,12 @@ const form = ref({
   thana: '',
   email: ''
 });
-
+function generateOrderId() {
+  const seq = Number(localStorage.getItem('order_seq') || '0') + 1;
+  localStorage.setItem('order_seq', seq);
+  const year = new Date().getFullYear();
+  return `ORD-${year}-${String(seq).padStart(6, '0')}`;
+}
 const validateForm = () => {
   const { fullName, phone, address, district, thana } = form.value;
   return fullName && phone && address && district && thana;
@@ -133,12 +138,25 @@ const placeOrder = async () => {
   isLoading.value = true;
   // Simulate async operation (e.g., order processing)
   await new Promise(resolve => setTimeout(resolve, 800));
-  toast.show('Order placed successfully!');
-  cartStore.clearCart();
-  // Reset form
-  form.value = { fullName: '', phone: '', address: '', district: '', thana: '', email: '' };
-  isLoading.value = false;
-  router.push({ name: 'Home' });
+    // Create order object and store it
+    const order = {
+      orderId: generateOrderId(),
+      customerName: form.value.fullName,
+      phone: form.value.phone,
+      address: form.value.address,
+      totalAmount: totalPrice.value,
+      createdAt: new Date().toISOString(),
+      status: 'Order Placed',
+    };
+    const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+    orders.push(order);
+    localStorage.setItem('orders', JSON.stringify(orders));
+    toast.show(`Your Order ID: ${order.orderId}`);
+    cartStore.clearCart();
+    // Reset form
+    form.value = { fullName: '', phone: '', address: '', district: '', thana: '', email: '' };
+    isLoading.value = false;
+    router.push({ name: 'Home' });
 };
 const filteredThanas = computed(() => {
   if (!form.value.district) return [];
