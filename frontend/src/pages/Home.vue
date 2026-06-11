@@ -17,6 +17,7 @@
       </div>
     </section>
     <PromoBanner />
+    <PartnersSlider />
     <ReviewSlider />
     <Newsletter />
   </main>
@@ -27,6 +28,7 @@ import HeroSlider from '../components/HeroSlider.vue';
 import CategoryCarousel from '../components/CategoryCarousel.vue';
 import PromoBanner from '../components/PromoBanner.vue';
 import ReviewSlider from '../components/ReviewSlider.vue';
+import PartnersSlider from '../components/PartnersSlider.vue';
 import Newsletter from '../components/Newsletter.vue';
 import ProductCard from '../components/ProductCard.vue';
 import products from '../data/products.json';

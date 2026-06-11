@@ -1,0 +1,12 @@
+[
+  { "id": 1,  "name": "Nestlé",    "image": "/images/partners/nestle.svg"    },
+  { "id": 2,  "name": "Unilever",  "image": "/images/partners/unilever.svg"  },
+  { "id": 3,  "name": "PRAN",      "image": "/images/partners/pran.svg"      },
+  { "id": 4,  "name": "ACI",       "image": "/images/partners/aci.svg"       },
+  { "id": 5,  "name": "Arla",      "image": "/images/partners/arla.svg"      },
+  { "id": 6,  "name": "Britannia", "image": "/images/partners/britannia.svg" },
+  { "id": 7,  "name": "Kellogg's", "image": "/images/partners/kelloggs.svg"  },
+  { "id": 8,  "name": "Danone",    "image": "/images/partners/danone.svg"    },
+  { "id": 9,  "name": "PepsiCo",   "image": "/images/partners/pepsico.svg"   },
+  { "id": 10, "name": "Coca-Cola", "image": "/images/partners/cocacola.svg"  }
+]
