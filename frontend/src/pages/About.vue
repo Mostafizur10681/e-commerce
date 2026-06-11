@@ -2,7 +2,7 @@
   <main class="py-14 px-4 bg-gray-50 dark:bg-gray-900/50 min-h-screen">
     <div class="max-w-4xl mx-auto">
       <div class="text-center mb-12">
-        <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-4">About FreshMart</h1>
+        <h1 class="section-title">About FreshMart</h1>
         <p class="text-lg text-gray-600 dark:text-gray-300">Delivering freshness to your doorstep since 2023.</p>
       </div>
       

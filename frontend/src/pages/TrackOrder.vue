@@ -2,7 +2,7 @@
   <!-- Hero Banner -->
   <section class="bg-gray-100 dark:bg-gray-900 py-12">
     <div class="container mx-auto px-4 text-center">
-      <h1 class="text-4xl md:text-5xl font-extrabold text-primary dark:text-primary-light">Track Your Order</h1>
+      <h1 class="section-title">Track Your Order</h1>
       <p class="mt-4 text-lg text-gray-700 dark:text-gray-300 max-w-2xl mx-auto">
         Enter your Order ID to see the current status and details.
       </p>

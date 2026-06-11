@@ -2,16 +2,7 @@
   <!-- Hero Banner -->
   <section class="bg-gray-100 dark:bg-gray-900 py-12">
     <div class="container mx-auto px-4 text-center">
-      <nav class="text-sm text-gray-600 dark:text-gray-400 mb-2" aria-label="Breadcrumb">
-        <ol class="inline-flex items-center space-x-1">
-          <li class="inline-flex items-center">
-            <router-link to="/" class="hover:underline">Home</router-link>
-            <svg class="w-3 h-3 mx-2" fill="currentColor" viewBox="0 0 20 20"><path d="M7.05 4.05a1 1 0 011.414 0L15 10.586l-6.536 6.535a1 1 0 01-1.414-1.414L12.172 10 7.05 4.878a1 1 0 010-1.414z"/></svg>
-          </li>
-          <li aria-current="page" class="text-gray-800 dark:text-gray-200">FAQ</li>
-        </ol>
-      </nav>
-      <h1 class="text-4xl md:text-5xl font-extrabold text-primary dark:text-primary-light">Frequently Asked Questions</h1>
+      <h1 class="section-title">Frequently Asked Questions</h1>
       <p class="mt-4 text-lg text-gray-700 dark:text-gray-300 max-w-2xl mx-auto">
         Find answers to common questions about orders, delivery, payment, returns, and customer support.
       </p>
