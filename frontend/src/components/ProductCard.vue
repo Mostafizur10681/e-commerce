@@ -1,5 +1,5 @@
 <template>
-  <div id="n8k2x1" class="card overflow-hidden group" @click="goToDetail" style="cursor:pointer;">
+  <div id="n8k2x1" class="card overflow-hidden group relative" @click="goToDetail" style="cursor:pointer;">
     <!-- Image -->
     <div class="relative overflow-hidden">
       <img :src="product.image" :alt="product.name"
@@ -8,6 +8,17 @@
       <span v-if="product.badge"
         class="absolute top-3 left-3 text-xs font-bold uppercase px-2.5 py-1 rounded-full"
         :class="product.badge === 'Sale' ? 'bg-red-500 text-white' : 'bg-emerald-500 text-white'">{{ product.badge }}</span>
+        
+      <!-- Wishlist Toggle -->
+      <button
+        @click.stop="toggleWishlist"
+        class="absolute top-3 right-3 p-2 rounded-full backdrop-blur-md transition-all duration-205 shadow-md z-10 hover:scale-110"
+        :class="isInWishlist ? 'bg-red-500 text-white' : 'bg-white/80 dark:bg-gray-900/80 text-gray-500 hover:text-red-550 hover:bg-white'"
+      >
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/>
+        </svg>
+      </button>
     </div>
     <!-- Info -->
     <div class="p-4">
@@ -38,7 +49,10 @@
 </template>
 
 <script setup>
+import { computed } from 'vue';
 import { useRouter } from 'vue-router';
+import { useWishlistStore } from '../stores/wishlistStore';
+import { useToastStore } from '../stores/toastStore';
 
 const props = defineProps({
   product: { type: Object, required: true }
@@ -47,8 +61,21 @@ const props = defineProps({
 defineEmits(['addToCart']);
 
 const router = useRouter();
+const wishlistStore = useWishlistStore();
+const toastStore = useToastStore();
+
+const isInWishlist = computed(() => wishlistStore.isInWishlist(props.product.id));
+
+function toggleWishlist() {
+  const added = wishlistStore.toggleWishlist(props.product);
+  if (added) {
+    toastStore.show(`${props.product.name} added to wishlist!`, 'success');
+  } else {
+    toastStore.show(`${props.product.name} removed from wishlist.`, 'success');
+  }
+}
+
 function goToDetail() {
-  // id="r2m9qz"
   router.push({ name: 'ProductDetails', params: { id: props.product.id } });
 }
 </script>

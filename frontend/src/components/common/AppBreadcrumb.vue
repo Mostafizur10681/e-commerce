@@ -123,6 +123,22 @@ const breadcrumbs = computed(() => {
     crumbs.push({ label: 'About Us', to: '/about' });
   }
 
+  else if (route.path.startsWith('/myaccount')) {
+    crumbs.push({ label: 'My Account', to: '/myaccount/dashboard' });
+    const subPageName = route.name;
+    if (subPageName && subPageName !== 'MyAccountDashboard' && subPageName !== 'Dashboard') {
+      const labelMap = {
+        'MyAccountOrders': 'My Orders',
+        'MyAccountWishlist': 'Wishlist',
+        'MyAccountAddress': 'Saved Addresses',
+        'MyAccountProfile': 'Manage Profile',
+        'MyAccountDeleteProfile': 'Delete Profile'
+      };
+      const cleanLabel = labelMap[subPageName] || subPageName;
+      crumbs.push({ label: cleanLabel, to: route.path });
+    }
+  }
+
   // Fallback: build from route meta or route name
   else if (route.meta?.breadcrumb) {
     crumbs.push({ label: route.meta.breadcrumb, to: route.path });

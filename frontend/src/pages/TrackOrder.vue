@@ -86,12 +86,21 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
 
+const route = useRoute();
 const stages = ['Order Placed', 'Processing', 'Packed', 'Shipped', 'Out For Delivery', 'Delivered'];
 const searchId = ref('');
 const errorMessage = ref('');
 const foundOrder = ref(null);
+
+onMounted(() => {
+  if (route.query.orderId) {
+    searchId.value = String(route.query.orderId);
+    track();
+  }
+});
 
 function loadOrders() {
   try {

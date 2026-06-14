@@ -238,10 +238,11 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useCartStore } from '@/stores/cartStore';
 import { useToastStore } from '@/stores/toastStore';
+import { useAuthStore } from '@/stores/authStore';
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
 import { allDistricts } from '@bangladeshi/bangladesh-address/build/src/district/index.js';
@@ -250,6 +251,7 @@ import bdThana from '@bangladeshi/bangladesh-address/build/src/json/bd-thana.jso
 const router = useRouter();
 const cartStore = useCartStore();
 const toast = useToastStore();
+const authStore = useAuthStore();
 
 const cartItems = computed(() => cartStore.items);
 const totalPrice = computed(() => cartStore.totalPrice);
@@ -266,6 +268,15 @@ const form = ref({
   thana: '',
   email: ''
 });
+
+onMounted(() => {
+  if (authStore.currentUser) {
+    form.value.fullName = authStore.currentUser.name || '';
+    form.value.phone = authStore.currentUser.phone || '';
+    form.value.email = authStore.currentUser.email || '';
+  }
+});
+
 function generateOrderId() {
   const seq = Number(localStorage.getItem('order_seq') || '0') + 1;
   localStorage.setItem('order_seq', seq);
@@ -290,10 +301,19 @@ const placeOrder = async () => {
       orderId: generateOrderId(),
       customerName: form.value.fullName,
       phone: form.value.phone,
-      address: form.value.address,
+      address: `${form.value.address}, ${form.value.thana}, ${form.value.district}`,
       totalAmount: totalPrice.value,
       createdAt: new Date().toISOString(),
       status: 'Order Placed',
+      items: cartItems.value.map(item => ({
+        id: item.product.id,
+        name: item.product.name,
+        price: item.product.price,
+        quantity: item.quantity,
+        image: item.product.image || item.product.images?.[0]
+      })),
+      email: form.value.email || '',
+      userId: authStore.currentUser?.id || null
     };
     const orders = JSON.parse(localStorage.getItem('orders') || '[]');
     orders.push(order);

@@ -26,6 +26,70 @@
           {{ link.label }}
           <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300"></span>
         </RouterLink>
+
+        <!-- Sign In or My Account Dropdown -->
+        <template v-if="!authStore.currentUser">
+          <RouterLink to="/login"
+            class="text-gray-600 dark:text-gray-300 font-medium hover:text-primary dark:hover:text-primary-light transition-colors duration-200 relative group">
+            Sign In
+            <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300"></span>
+          </RouterLink>
+        </template>
+        <template v-else>
+          <div class="relative" ref="accountWrapRef">
+            <button @click="accountDropdownOpen = !accountDropdownOpen"
+              class="flex items-center gap-1 text-gray-600 dark:text-gray-300 font-medium hover:text-primary dark:hover:text-primary-light transition-colors duration-200 outline-none">
+              <span>My Account</span>
+              <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-180': accountDropdownOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </button>
+            
+            <Transition name="dropdown">
+              <div v-if="accountDropdownOpen"
+                class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 py-2 z-50 animate-fade-in">
+                <div class="px-4 py-2 border-b border-gray-100 dark:border-gray-700 mb-1">
+                  <p class="text-xs text-gray-400 dark:text-gray-500">Signed in as</p>
+                  <p class="text-sm font-semibold text-gray-800 dark:text-gray-200 truncate">{{ authStore.currentUser.name }}</p>
+                </div>
+                
+                <button @click="navigateToAccount('/myaccount/dashboard')"
+                  class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center gap-2">
+                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                  </svg>
+                  Dashboard
+                </button>
+                
+                <button @click="navigateToAccount('/myaccount/profile')"
+                  class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center gap-2">
+                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                  Profile
+                </button>
+                
+                <button @click="navigateToAccount('/myaccount/orders')"
+                  class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center gap-2">
+                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                  </svg>
+                  Orders
+                </button>
+                
+                <hr class="border-gray-100 dark:border-gray-700 my-1" />
+                
+                <button @click="handleLogout"
+                  class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors flex items-center gap-2 font-medium">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                  </svg>
+                  Logout
+                </button>
+              </div>
+            </Transition>
+          </div>
+        </template>
       </div>
 
       <!-- Right side -->
@@ -161,6 +225,38 @@
             class="block px-4 py-3 rounded-xl text-gray-700 dark:text-gray-200 font-medium hover:bg-primary-50 dark:hover:bg-gray-800 hover:text-primary transition-colors">
             {{ link.label }}
           </RouterLink>
+
+          <!-- Mobile Sign In / Account Dropdown -->
+          <template v-if="!authStore.currentUser">
+            <RouterLink to="/login" @click="mobileOpen = false"
+              class="block px-4 py-3 rounded-xl text-gray-700 dark:text-gray-200 font-medium hover:bg-primary-50 dark:hover:bg-gray-800 hover:text-primary transition-colors border-t border-gray-100 dark:border-gray-800 mt-2 pt-3">
+              Sign In
+            </RouterLink>
+          </template>
+          <template v-else>
+            <div class="border-t border-gray-100 dark:border-gray-800 mt-2 pt-3">
+              <div class="px-4 py-2 mb-1">
+                <p class="text-xs text-gray-400 dark:text-gray-500">Signed in as</p>
+                <p class="text-sm font-semibold text-gray-800 dark:text-gray-200 truncate">{{ authStore.currentUser.name }}</p>
+              </div>
+              <button @click="navigateToAccount('/myaccount/dashboard'); mobileOpen = false"
+                class="w-full text-left px-4 py-3 rounded-xl text-gray-700 dark:text-gray-200 font-medium hover:bg-primary-50 dark:hover:bg-gray-800 hover:text-primary transition-colors flex items-center gap-2">
+                <span>📊 Dashboard</span>
+              </button>
+              <button @click="navigateToAccount('/myaccount/profile'); mobileOpen = false"
+                class="w-full text-left px-4 py-3 rounded-xl text-gray-700 dark:text-gray-200 font-medium hover:bg-primary-50 dark:hover:bg-gray-800 hover:text-primary transition-colors flex items-center gap-2">
+                <span>👤 Profile</span>
+              </button>
+              <button @click="navigateToAccount('/myaccount/orders'); mobileOpen = false"
+                class="w-full text-left px-4 py-3 rounded-xl text-gray-700 dark:text-gray-200 font-medium hover:bg-primary-50 dark:hover:bg-gray-800 hover:text-primary transition-colors flex items-center gap-2">
+                <span>📦 Orders</span>
+              </button>
+              <button @click="handleLogout(); mobileOpen = false"
+                class="w-full text-left px-4 py-3 rounded-xl text-red-600 font-semibold hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors flex items-center gap-2">
+                <span>🚪 Logout</span>
+              </button>
+            </div>
+          </template>
         </div>
       </div>
     </transition>
@@ -177,11 +273,18 @@ import ThemeToggle from './ThemeToggle.vue';
 import { useCartStore } from '../stores/cartStore';
 import { useUiStore } from '../stores/uiStore';
 import { useProductStore } from '../stores/productStore';
+import { useAuthStore } from '../stores/authStore';
+import { useToastStore } from '../stores/toastStore';
 
 const cartStore = useCartStore();
 const uiStore   = useUiStore();
 const productStore = useProductStore();
+const authStore = useAuthStore();
+const toastStore = useToastStore();
 const router = useRouter();
+
+const accountDropdownOpen = ref(false);
+const accountWrapRef = ref(null);
 
 const mobileOpen  = ref(false);
 const searchQuery = ref('');
@@ -234,6 +337,26 @@ function handleOutsideClick(e) {
   if (searchWrapRef.value && !searchWrapRef.value.contains(e.target)) {
     dropdownOpen.value = false;
   }
+  if (accountWrapRef.value && !accountWrapRef.value.contains(e.target)) {
+    accountDropdownOpen.value = false;
+  }
+}
+
+function handleLogout() {
+  accountDropdownOpen.value = false;
+  authStore.logout();
+  toastStore.show('Logout successful', 'success');
+  router.push('/');
+}
+
+function navigateToAccount(path) {
+  accountDropdownOpen.value = false;
+  router.push(path);
+}
+
+function navigateDummy(path) {
+  accountDropdownOpen.value = false;
+  toastStore.show(`${path.slice(1).charAt(0).toUpperCase() + path.slice(2)} page is coming soon!`, 'info');
 }
 
 onMounted(()      => document.addEventListener('mousedown', handleOutsideClick));

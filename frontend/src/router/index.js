@@ -4,6 +4,18 @@ import Home from '../pages/Home.vue';
 import Shop from '../pages/Shop.vue';
 import About from '../pages/About.vue';
 import Contact from '../pages/Contact.vue';
+import LoginPage from '../views/LoginPage.vue';
+import RegisterPage from '../views/RegisterPage.vue';
+
+import MyAccountLayout from '../layouts/MyAccountLayout.vue';
+import Dashboard from '../views/myaccount/Dashboard.vue';
+import Orders from '../views/myaccount/Orders.vue';
+import Wishlist from '../views/myaccount/Wishlist.vue';
+import Address from '../views/myaccount/Address.vue';
+import Profile from '../views/myaccount/Profile.vue';
+import DeleteProfile from '../views/myaccount/DeleteProfile.vue';
+
+import { useAuthStore } from '../stores/authStore';
 
 const routes = [
   { path: '/', name: 'Home', component: Home, meta: { breadcrumb: 'Home' } },
@@ -16,11 +28,42 @@ const routes = [
   { path: '/checkout', name: 'Checkout', component: () => import('../pages/CheckoutPage.vue'), meta: { breadcrumb: 'Checkout' } },
   { path: '/faq', name: 'FAQ', component: () => import('../pages/FaqPage.vue'), meta: { breadcrumb: 'FAQ' } },
   { path: '/track-order', name: 'TrackOrder', component: () => import('../pages/TrackOrder.vue'), meta: { breadcrumb: 'Track Order' } },
+  { path: '/login', name: 'Login', component: LoginPage, meta: { breadcrumb: 'Login' } },
+  { path: '/register', name: 'Register', component: RegisterPage, meta: { breadcrumb: 'Register' } },
+  
+  {
+    path: '/myaccount',
+    component: MyAccountLayout,
+    redirect: '/myaccount/dashboard',
+    children: [
+      { path: 'dashboard', name: 'MyAccountDashboard', component: Dashboard },
+      { path: 'orders', name: 'MyAccountOrders', component: Orders },
+      { path: 'wishlist', name: 'MyAccountWishlist', component: Wishlist },
+      { path: 'address', name: 'MyAccountAddress', component: Address },
+      { path: 'profile', name: 'MyAccountProfile', component: Profile },
+      { path: 'delete-profile', name: 'MyAccountDeleteProfile', component: DeleteProfile }
+    ]
+  }
 ];
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
+});
+
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore();
+  const isAuthenticated = authStore.currentUser !== null;
+
+  if (to.path.startsWith('/myaccount')) {
+    if (!isAuthenticated) {
+      next({ name: 'Login' });
+    } else {
+      next();
+    }
+  } else {
+    next();
+  }
 });
 
 export default router;
