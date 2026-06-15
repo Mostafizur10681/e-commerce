@@ -28,6 +28,7 @@ const routes = [
   { path: '/checkout', name: 'Checkout', component: () => import('../pages/CheckoutPage.vue'), meta: { breadcrumb: 'Checkout' } },
   { path: '/faq', name: 'FAQ', component: () => import('../pages/FaqPage.vue'), meta: { breadcrumb: 'FAQ' } },
   { path: '/track-order', name: 'TrackOrder', component: () => import('../pages/TrackOrder.vue'), meta: { breadcrumb: 'Track Order' } },
+  { path: '/shipping-info', name: 'ShippingInfo', component: () => import('../views/ShippingInfoPage.vue'), meta: { breadcrumb: 'Shipping Information' } },
   { path: '/login', name: 'Login', component: LoginPage, meta: { breadcrumb: 'Login' } },
   { path: '/register', name: 'Register', component: RegisterPage, meta: { breadcrumb: 'Register' } },
   

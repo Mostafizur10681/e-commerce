@@ -28,9 +28,9 @@
       <div>
         <h3 class="text-white font-bold mb-4">Customer Service</h3>
         <ul class="space-y-2">
-            <li v-for="item in serviceLinks" :key="item">
-              <RouterLink v-if="item === 'FAQ'" to="/faq" class="text-gray-400 hover:text-primary transition-colors text-sm">{{ item }}</RouterLink>
-              <a v-else href="#" class="text-gray-400 hover:text-primary transition-colors text-sm">{{ item }}</a>
+            <li v-for="item in serviceLinks" :key="item.label">
+              <RouterLink v-if="item.path !== '#'" :to="item.path" class="text-gray-400 hover:text-primary transition-colors text-sm">{{ item.label }}</RouterLink>
+              <a v-else href="#" class="text-gray-400 hover:text-primary transition-colors text-sm">{{ item.label }}</a>
             </li>
         </ul>
       </div>
@@ -71,5 +71,11 @@ const quickLinks = [
   { label: 'About Us', path: '/about' },
   { label: 'Contact', path: '/contact' },
 ];
-const serviceLinks = ['FAQ', 'Shipping Info', 'Returns & Refunds', 'Order Tracking', 'Payment Methods'];
+const serviceLinks = [
+  { label: 'FAQ', path: '/faq' },
+  { label: 'Shipping Info', path: '/shipping-info' },
+  { label: 'Returns & Refunds', path: '#' },
+  { label: 'Order Tracking', path: '/track-order' },
+  { label: 'Payment Methods', path: '#' },
+];
 </script>
