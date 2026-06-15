@@ -1,7 +1,7 @@
 <template>
   <section class="py-12 px-4" data-aos="fade-up">
     <div class="max-w-7xl mx-auto">
-      <h2 class="section-title">Shop by Category</h2>
+      <h2 id="categorytitle" class="section-title">Shop by Category</h2>
       <div class="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide">
         <div v-for="cat in categories" :key="cat.id"
           class="flex-shrink-0 snap-center group cursor-pointer"

@@ -22,7 +22,8 @@
       <!-- Desktop menu -->
       <div class="hidden md:flex items-center gap-8">
         <RouterLink v-for="link in navLinks" :key="link.path" :to="link.path"
-          class="text-gray-600 dark:text-gray-300 font-medium hover:text-primary dark:hover:text-primary-light transition-colors duration-200 relative group">
+          class="text-gray-600 dark:text-gray-300 font-medium hover:text-primary dark:hover:text-primary-light transition-colors duration-200 relative group"
+          active-class="text-primary dark:text-primary-light font-semibold [&>span]:w-full">
           {{ link.label }}
           <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300"></span>
         </RouterLink>
@@ -222,7 +223,8 @@
           </div>
 
           <RouterLink v-for="link in navLinks" :key="link.path" :to="link.path" @click="mobileOpen = false"
-            class="block px-4 py-3 rounded-xl text-gray-700 dark:text-gray-200 font-medium hover:bg-primary-50 dark:hover:bg-gray-800 hover:text-primary transition-colors">
+            class="block px-4 py-3 rounded-xl text-gray-700 dark:text-gray-200 font-medium hover:bg-primary-50 dark:hover:bg-gray-800 hover:text-primary transition-colors"
+            active-class="bg-primary-50 dark:bg-gray-800 text-primary dark:text-primary-light font-semibold">
             {{ link.label }}
           </RouterLink>
 

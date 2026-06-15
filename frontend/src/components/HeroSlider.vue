@@ -1,39 +1,90 @@
 <template>
-  <section class="relative overflow-hidden" data-aos="fade-up">
-    <div class="relative h-72 sm:h-96 md:h-[520px]">
+  <section class="relative overflow-hidden bg-gray-100 dark:bg-gray-950 transition-colors duration-300" data-aos="fade-up">
+    <!-- Main Slider Track -->
+    <div class="relative h-96 sm:h-[480px] md:h-[580px] w-full">
       <transition-group name="fade-slide">
-        <div v-for="(slide, i) in slides" :key="slide.id" v-show="active === i"
-          class="absolute inset-0">
-          <img :src="slide.image" :alt="slide.title" class="w-full h-full object-cover" />
-          <div class="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent flex items-center">
-            <div class="max-w-7xl mx-auto px-6 w-full">
-              <div class="max-w-xl">
-                <span class="inline-block bg-primary/90 text-white text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full mb-4">{{ slide.badge || 'Featured' }}</span>
-                <h2 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white mb-3 leading-tight">{{ slide.title }}</h2>
-                <p class="text-base sm:text-lg text-gray-200 mb-6">{{ slide.subtitle }}</p>
-                <RouterLink :to="slide.ctaLink" class="btn-primary">
-                  {{ slide.ctaText }}
-                  <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-                </RouterLink>
+        <div
+          v-for="(slide, i) in slides"
+          :key="slide.id"
+          v-show="active === i"
+          class="absolute inset-0 w-full h-full"
+        >
+          <!-- Background image with zoom effect on mounting -->
+          <img
+            :src="slide.image"
+            :alt="slide.title"
+            class="w-full h-full object-cover transition-transform duration-1000"
+            :class="active === i ? 'scale-105' : 'scale-100'"
+          />
+          
+          <!-- Gradient Overlay -->
+          <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/45 to-transparent flex items-center">
+            <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 w-full">
+              <div class="max-w-xl text-left space-y-4 md:space-y-6">
+                <!-- Badge -->
+                <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-primary/95 text-white shadow-lg tracking-wider uppercase backdrop-blur-md">
+                  ✨ {{ slide.badge || 'Fresh Choice' }}
+                </span>
+                
+                <!-- Title -->
+                <h2 class="text-3xl sm:text-5xl md:text-6xl font-black text-white leading-tight drop-shadow-sm">
+                  {{ slide.title }}
+                </h2>
+                
+                <!-- Subtitle -->
+                <p class="text-base sm:text-xl text-gray-200 leading-relaxed font-medium">
+                  {{ slide.subtitle }}
+                </p>
+                
+                <!-- CTA Button -->
+                <div class="pt-2">
+                  <RouterLink
+                    :to="slide.ctaLink || '/shop'"
+                    class="inline-flex items-center justify-center px-8 py-4 bg-primary text-white font-extrabold rounded-2xl hover:bg-primary-dark transition duration-300 shadow-xl hover:shadow-primary/20 hover:-translate-y-1 transform group"
+                  >
+                    <span>{{ slide.ctaText || 'Shop Now' }}</span>
+                    <svg class="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                  </RouterLink>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </transition-group>
     </div>
-    <!-- Navigation arrows -->
-    <button @click="prev" class="absolute left-3 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/40 backdrop-blur-sm text-white rounded-full p-2.5 transition-all" aria-label="Previous">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+
+    <!-- Navigation Arrows -->
+    <button
+      @click="prev"
+      class="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/10 dark:bg-black/10 hover:bg-primary/90 dark:hover:bg-primary/90 text-white rounded-full flex items-center justify-center backdrop-blur-md transition-all border border-white/20 active:scale-90 shadow"
+      aria-label="Previous slide"
+    >
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
     </button>
-    <button @click="next" class="absolute right-3 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/40 backdrop-blur-sm text-white rounded-full p-2.5 transition-all" aria-label="Next">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+    <button
+      @click="next"
+      class="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/10 dark:bg-black/10 hover:bg-primary/90 dark:hover:bg-primary/90 text-white rounded-full flex items-center justify-center backdrop-blur-md transition-all border border-white/20 active:scale-90 shadow"
+      aria-label="Next slide"
+    >
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+      </svg>
     </button>
-    <!-- Dots -->
-    <div class="absolute bottom-5 left-1/2 -translate-x-1/2 flex gap-2">
-      <button v-for="(slide, i) in slides" :key="slide.id" @click="goTo(i)"
-        class="w-2.5 h-2.5 rounded-full transition-all duration-300"
-        :class="active === i ? 'bg-white w-8' : 'bg-white/50 hover:bg-white/80'"
-        :aria-label="'Go to slide ' + (i + 1)">
+
+    <!-- Navigation Indicator Dots -->
+    <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-3">
+      <button
+        v-for="(slide, i) in slides"
+        :key="slide.id"
+        @click="goTo(i)"
+        class="h-2.5 rounded-full transition-all duration-300 focus:outline-none"
+        :class="active === i ? 'bg-primary w-8' : 'bg-white/50 hover:bg-white/95 w-2.5'"
+        :aria-label="'Go to slide ' + (i + 1)"
+      >
       </button>
     </div>
   </section>
@@ -43,22 +94,49 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import slidesData from '../data/sliders.json';
 
-const slides = slidesData;
+const slides = ref(slidesData);
 const active = ref(0);
 let timer = null;
 
-const next = () => { active.value = (active.value + 1) % slides.length; };
-const prev = () => { active.value = (active.value - 1 + slides.length) % slides.length; };
-const goTo = (i) => { active.value = i; resetTimer(); };
+const next = () => {
+  active.value = (active.value + 1) % slides.value.length;
+};
 
-const resetTimer = () => { clearInterval(timer); timer = setInterval(next, 5000); };
+const prev = () => {
+  active.value = (active.value - 1 + slides.value.length) % slides.value.length;
+};
 
-onMounted(() => { timer = setInterval(next, 5000); });
-onBeforeUnmount(() => { clearInterval(timer); });
+const goTo = (i) => {
+  active.value = i;
+  resetTimer();
+};
+
+const resetTimer = () => {
+  clearInterval(timer);
+  timer = setInterval(next, 6500);
+};
+
+onMounted(() => {
+  timer = setInterval(next, 6500);
+});
+
+onBeforeUnmount(() => {
+  clearInterval(timer);
+});
 </script>
 
 <style scoped>
-.fade-slide-enter-active, .fade-slide-leave-active { transition: all 0.7s ease; }
-.fade-slide-enter-from { opacity: 0; transform: translateX(30px); }
-.fade-slide-leave-to { opacity: 0; transform: translateX(-30px); }
+/* Fade + slide transition for slider items */
+.fade-slide-enter-active,
+.fade-slide-leave-active {
+  transition: opacity 0.8s ease-in-out, transform 0.8s ease-in-out;
+}
+.fade-slide-enter-from {
+  opacity: 0;
+  transform: scale(0.98);
+}
+.fade-slide-leave-to {
+  opacity: 0;
+  transform: scale(1.02);
+}
 </style>
