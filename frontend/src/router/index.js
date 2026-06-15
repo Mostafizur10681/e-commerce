@@ -29,6 +29,8 @@ const routes = [
   { path: '/faq', name: 'FAQ', component: () => import('../pages/FaqPage.vue'), meta: { breadcrumb: 'FAQ' } },
   { path: '/track-order', name: 'TrackOrder', component: () => import('../pages/TrackOrder.vue'), meta: { breadcrumb: 'Track Order' } },
   { path: '/shipping-info', name: 'ShippingInfo', component: () => import('../views/ShippingInfoPage.vue'), meta: { breadcrumb: 'Shipping Information' } },
+  { path: '/returns-refunds', name: 'ReturnsRefunds', component: () => import('../views/ReturnsRefundsPage.vue'), meta: { breadcrumb: 'Returns & Refunds' } },
+  { path: '/payment-methods', name: 'PaymentMethods', component: () => import('../views/PaymentMethodsPage.vue'), meta: { breadcrumb: 'Payment Methods' } },
   { path: '/login', name: 'Login', component: LoginPage, meta: { breadcrumb: 'Login' } },
   { path: '/register', name: 'Register', component: RegisterPage, meta: { breadcrumb: 'Register' } },
   

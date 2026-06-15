@@ -74,8 +74,8 @@ const quickLinks = [
 const serviceLinks = [
   { label: 'FAQ', path: '/faq' },
   { label: 'Shipping Info', path: '/shipping-info' },
-  { label: 'Returns & Refunds', path: '#' },
+  { label: 'Returns & Refunds', path: '/returns-refunds' },
   { label: 'Order Tracking', path: '/track-order' },
-  { label: 'Payment Methods', path: '#' },
+  { label: 'Payment Methods', path: '/payment-methods' },
 ];
 </script>
