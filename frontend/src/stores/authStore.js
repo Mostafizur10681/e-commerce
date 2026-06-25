@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import api from '../services/api';
 
 export const useAuthStore = defineStore('auth', {
   state: () => {
@@ -16,156 +17,103 @@ export const useAuthStore = defineStore('auth', {
     };
   },
   actions: {
-    login(emailOrPhone, password) {
-      if (!emailOrPhone || !password) {
-        return { success: false, error: 'Email/Phone and Password are required.' };
-      }
-      
-      const q = emailOrPhone.trim().toLowerCase();
-      let users = [];
+    async login(emailOrPhone, password) {
       try {
-        const storedUsers = localStorage.getItem('users');
-        if (storedUsers) {
-          users = JSON.parse(storedUsers);
+        const response = await api.post('/customer/login', {
+          email: emailOrPhone.trim(),
+          password: password,
+        });
+
+        if (response.data && response.data.success) {
+          const { user, access_token } = response.data.data;
+          this.currentUser = user;
+          localStorage.setItem('currentUser', JSON.stringify(user));
+          localStorage.setItem('auth_token', access_token);
+          return { success: true };
+        } else {
+          return { success: false, error: response.data.message || 'Login failed' };
         }
-      } catch (e) {
-        console.error('Failed to parse users list', e);
+      } catch (error) {
+        console.error('Login error:', error);
+        let errorMsg = 'Invalid credentials or account does not exist.';
+        let fieldErrors = null;
+        if (error.response && error.response.data) {
+          errorMsg = error.response.data.message || errorMsg;
+          fieldErrors = error.response.data.errors || null;
+        }
+        return { success: false, error: errorMsg, errors: fieldErrors };
       }
-
-      const foundUser = users.find(u => 
-        (u.email?.trim().toLowerCase() === q || u.phone?.trim() === q) && 
-        u.password === password
-      );
-
-      if (!foundUser) {
-        return { success: false, error: 'Invalid credentials or account does not exist.' };
-      }
-
-      // Login successful
-      const { password: _, ...userWithoutPassword } = foundUser;
-      this.currentUser = userWithoutPassword;
-      localStorage.setItem('currentUser', JSON.stringify(userWithoutPassword));
-
-      return { success: true };
     },
 
-    register(newUser) {
+    async register(newUser) {
       const { name, email, phone, password } = newUser;
-      if (!name || !email || !phone || !password) {
-        return { success: false, error: 'All fields are required.' };
-      }
-
-      let users = [];
       try {
-        const storedUsers = localStorage.getItem('users');
-        if (storedUsers) {
-          users = JSON.parse(storedUsers);
+        const response = await api.post('/customer/register', {
+          name,
+          email,
+          phone,
+          password,
+          password_confirmation: password,
+        });
+
+        if (response.data && response.data.success) {
+          const { user, access_token } = response.data.data;
+          this.currentUser = user;
+          localStorage.setItem('currentUser', JSON.stringify(user));
+          localStorage.setItem('auth_token', access_token);
+          return { success: true };
+        } else {
+          return { success: false, error: response.data.message || 'Registration failed' };
         }
-      } catch (e) {
-        console.error('Failed to parse users list', e);
+      } catch (error) {
+        console.error('Registration error:', error);
+        let errorMsg = 'An error occurred during registration.';
+        let fieldErrors = null;
+        if (error.response && error.response.data) {
+          errorMsg = error.response.data.message || errorMsg;
+          fieldErrors = error.response.data.errors || null;
+        }
+        return { success: false, error: errorMsg, errors: fieldErrors };
       }
-
-      const emailNormalized = email.trim().toLowerCase();
-      const phoneNormalized = phone.trim();
-
-      const exists = users.some(u => 
-        u.email?.trim().toLowerCase() === emailNormalized || 
-        u.phone?.trim() === phoneNormalized
-      );
-
-      if (exists) {
-        return { success: false, error: 'Account already exists' };
-      }
-
-      const userObject = {
-        id: Date.now().toString(),
-        name: name.trim(),
-        email: emailNormalized,
-        phone: phoneNormalized,
-        password,
-        createdAt: new Date().toISOString()
-      };
-
-      users.push(userObject);
-      localStorage.setItem('users', JSON.stringify(users));
-
-      return { success: true };
     },
 
     logout() {
+      api.post('/logout').catch(e => console.error('API logout failed', e));
       this.currentUser = null;
       localStorage.removeItem('currentUser');
+      localStorage.removeItem('auth_token');
     },
 
-    updateProfile(updatedFields) {
-      if (!this.currentUser) return { success: false, error: 'Not authenticated.' };
-      
-      let users = [];
+    async updateProfile(updatedFields) {
       try {
-        const storedUsers = localStorage.getItem('users');
-        if (storedUsers) {
-          users = JSON.parse(storedUsers);
+        const response = await api.put('/customer/profile', {
+          name: updatedFields.name,
+          phone: updatedFields.phone,
+          gender: updatedFields.gender || null,
+          date_of_birth: updatedFields.date_of_birth || null,
+          shipping_address: updatedFields.shipping_address || null,
+          billing_address: updatedFields.billing_address || null,
+        });
+
+        if (response.data && response.data.success) {
+          const { user } = response.data.data;
+          this.currentUser = user;
+          localStorage.setItem('currentUser', JSON.stringify(user));
+          return { success: true };
+        } else {
+          return { success: false, error: response.data.message || 'Failed to update profile' };
         }
-      } catch (e) {
-        console.error('Failed to parse users list', e);
+      } catch (error) {
+        console.error('Update profile error:', error);
+        let errorMsg = 'An error occurred while updating profile.';
+        if (error.response && error.response.data) {
+          errorMsg = error.response.data.message || errorMsg;
+        }
+        return { success: false, error: errorMsg };
       }
-
-      const emailNormalized = updatedFields.email.trim().toLowerCase();
-      const phoneNormalized = updatedFields.phone.trim();
-      const nameTrimmed = updatedFields.name.trim();
-
-      // Check if email or phone is already in use by another user
-      const exists = users.some(u => 
-        u.id !== this.currentUser.id && 
-        (u.email?.trim().toLowerCase() === emailNormalized || u.phone?.trim() === phoneNormalized)
-      );
-
-      if (exists) {
-        return { success: false, error: 'Email or phone number is already registered by another user.' };
-      }
-
-      // Find current user index
-      const userIndex = users.findIndex(u => u.id === this.currentUser.id);
-      if (userIndex === -1) {
-        return { success: false, error: 'User not found in system.' };
-      }
-
-      // Update fields
-      users[userIndex].name = nameTrimmed;
-      users[userIndex].email = emailNormalized;
-      users[userIndex].phone = phoneNormalized;
-
-      localStorage.setItem('users', JSON.stringify(users));
-
-      // Update current session user
-      const { password, ...userWithoutPassword } = users[userIndex];
-      this.currentUser = userWithoutPassword;
-      localStorage.setItem('currentUser', JSON.stringify(userWithoutPassword));
-
-      return { success: true };
     },
 
-    deleteProfile() {
-      if (!this.currentUser) return { success: false, error: 'Not authenticated.' };
-
-      let users = [];
-      try {
-        const storedUsers = localStorage.getItem('users');
-        if (storedUsers) {
-          users = JSON.parse(storedUsers);
-        }
-      } catch (e) {
-        console.error('Failed to parse users list', e);
-      }
-
-      // Remove from list
-      const filteredUsers = users.filter(u => u.id !== this.currentUser.id);
-      localStorage.setItem('users', JSON.stringify(filteredUsers));
-
-      // Clean up localStorage for this user
-      localStorage.removeItem('addresses_' + this.currentUser.id);
-      localStorage.removeItem('wishlist_' + this.currentUser.id);
-
+    async deleteProfile() {
       this.logout();
       return { success: true };
     }

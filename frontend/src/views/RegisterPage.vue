@@ -233,7 +233,7 @@ function clearError(field) {
   errors.global = '';
 }
 
-function handleRegister() {
+async function handleRegister() {
   // Reset errors
   errors.name = '';
   errors.email = '';
@@ -270,8 +270,8 @@ function handleRegister() {
   if (!form.password) {
     errors.password = 'Password is required.';
     isValid = false;
-  } else if (form.password.length < 6) {
-    errors.password = 'Password must be at least 6 characters.';
+  } else if (form.password.length < 8) {
+    errors.password = 'Password must be at least 8 characters.';
     isValid = false;
   }
 
@@ -288,25 +288,29 @@ function handleRegister() {
 
   loading.value = true;
 
-  // Premium feeling slight latency
-  setTimeout(() => {
-    const result = authStore.register({
-      name: form.name,
-      email: form.email,
-      phone: form.phone,
-      password: form.password
-    });
-    
-    loading.value = false;
+  const result = await authStore.register({
+    name: form.name,
+    email: form.email,
+    phone: form.phone,
+    password: form.password
+  });
+  
+  loading.value = false;
 
-    if (result.success) {
-      toastStore.show('Registration successful', 'success');
-      authStore.login(form.email, form.password);
-      router.push('/myaccount/dashboard');
+  if (result.success) {
+    toastStore.show('Customer registration successful', 'success');
+    router.push('/myaccount/dashboard');
+  } else {
+    if (result.errors) {
+      Object.keys(result.errors).forEach((key) => {
+        if (errors[key] !== undefined) {
+          errors[key] = result.errors[key][0];
+        }
+      });
     } else {
       errors.global = result.error;
     }
-  }, 600);
+  }
 }
 </script>
 

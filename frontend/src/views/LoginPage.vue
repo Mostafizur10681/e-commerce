@@ -195,7 +195,7 @@ function forgotPassword() {
   toastStore.show('Forgot password logic is not implemented initially.', 'info');
 }
 
-function handleLogin() {
+async function handleLogin() {
   // Reset errors
   errors.emailOrPhone = '';
   errors.password = '';
@@ -218,18 +218,25 @@ function handleLogin() {
 
   loading.value = true;
 
-  // Fake slight lag for a premium feel
-  setTimeout(() => {
-    const result = authStore.login(form.emailOrPhone, form.password);
-    loading.value = false;
+  const result = await authStore.login(form.emailOrPhone, form.password);
+  loading.value = false;
 
-    if (result.success) {
-      toastStore.show('Login successful', 'success');
-      router.push('/myaccount/dashboard');
+  if (result.success) {
+    toastStore.show('Login successful', 'success');
+    router.push('/myaccount/dashboard');
+  } else {
+    if (result.errors) {
+      Object.keys(result.errors).forEach((key) => {
+        if (key === 'email') {
+          errors.emailOrPhone = result.errors[key][0];
+        } else if (errors[key] !== undefined) {
+          errors[key] = result.errors[key][0];
+        }
+      });
     } else {
       errors.global = result.error;
     }
-  }, 600);
+  }
 }
 </script>
 
