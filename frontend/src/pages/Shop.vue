@@ -299,9 +299,11 @@
 import { ref, reactive, computed, watch, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import ProductCard from '../components/ProductCard.vue';
-import products from '../data/products.json';
+import localProducts from '../data/products.json';
+import localCategories from '../data/categories.json';
 import { useCartStore } from '../stores/cartStore';
 import { useToastStore } from '../stores/toastStore';
+import api from '../services/api';
 
 const route   = useRoute();
 const router  = useRouter();
@@ -315,6 +317,10 @@ const selectedFlags      = ref([]);
 const sortBy             = ref('default');
 const minRating          = ref(0);
 const showMobileFilters  = ref(false);
+
+// Dynamic data lists
+const productsList       = ref([]);
+const categoriesList     = ref([]);
 
 // Pagination state
 const itemsPerPage = ref(12);
@@ -334,20 +340,76 @@ const priceRange = reactive([priceMin.value, priceMax.value]);
 const minPercent = computed(() => ((priceRange[0] - priceMin.value) / (priceMax.value - priceMin.value)) * 100);
 const maxPercent = computed(() => ((priceRange[1] - priceMin.value) / (priceMax.value - priceMin.value)) * 100);
 
+/* ── Load dynamic data on mount ── */
+onMounted(async () => {
+  syncSearch();
+  
+  // 1. Fetch categories
+  try {
+    const catResponse = await api.get('/v1/categories?all=true');
+    if (catResponse.data && catResponse.data.success && Array.isArray(catResponse.data.data)) {
+      categoriesList.value = catResponse.data.data;
+    } else {
+      categoriesList.value = localCategories;
+    }
+  } catch (error) {
+    console.error('Failed to fetch categories from API:', error);
+    categoriesList.value = localCategories;
+  }
+
+  // 2. Fetch products
+  try {
+    const prodResponse = await api.get('/v1/products?per_page=100');
+    let apiProducts = [];
+    if (prodResponse.data && prodResponse.data.success) {
+      const resData = prodResponse.data.data;
+      apiProducts = Array.isArray(resData) ? resData : (resData.data || []);
+    }
+    
+    if (apiProducts.length > 0) {
+      productsList.value = apiProducts.map(p => ({
+        id: p.id,
+        name: p.name,
+        category: p.category ? p.category.name : 'Uncategorized',
+        price: p.sale_price ? parseFloat(p.sale_price) : parseFloat(p.price),
+        originalPrice: p.sale_price ? parseFloat(p.price) : null,
+        unit: p.unit || '1 kg',
+        image: p.image || 'https://picsum.photos/seed/placeholder/400/400',
+        images: p.images && p.images.length ? p.images : [p.image || 'https://picsum.photos/seed/placeholder/400/400'],
+        rating: p.rating ? parseFloat(p.rating) : 5.0,
+        badge: p.sale_price ? 'Sale' : null,
+        description: p.description,
+        stock: p.stock
+      }));
+    } else {
+      productsList.value = localProducts;
+    }
+  } catch (error) {
+    console.error('Failed to fetch products from API, using fallback:', error);
+    productsList.value = localProducts;
+  }
+});
+
 /* ── Derive filter options with counts ── */
 const categoryOptions = computed(() => {
-  const cats = [...new Set(products.map(p => p.category))].sort();
+  if (categoriesList.value.length > 0) {
+    return categoriesList.value.map(cat => ({
+      name: cat.name,
+      count: productsList.value.filter(p => p.category === cat.name).length
+    }));
+  }
+  const cats = [...new Set(productsList.value.map(p => p.category))].sort();
   return cats.map(name => ({
     name,
-    count: products.filter(p => p.category === name).length,
+    count: productsList.value.filter(p => p.category === name).length,
   }));
 });
 
 const flagOptions = computed(() => {
-  const flags = [...new Set(products.map(p => p.badge).filter(Boolean))].sort();
+  const flags = [...new Set(productsList.value.map(p => p.badge).filter(Boolean))].sort();
   return flags.map(name => ({
     name,
-    count: products.filter(p => p.badge === name).length,
+    count: productsList.value.filter(p => p.badge === name).length,
   }));
 });
 
@@ -366,12 +428,11 @@ function syncSearch() {
   searchParam.value = (route.query.search || '').trim();
 }
 
-onMounted(syncSearch);
 watch(() => route.query.search, syncSearch);
 
 /* ── Combined filter + sort ── */
 const filteredProducts = computed(() => {
-  let list = [...products];
+  let list = [...productsList.value];
 
   // Search text
   const q = searchParam.value.toLowerCase();

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="card group relative flex flex-col justify-between overflow-hidden bg-white dark:bg-gray-850 border border-gray-150 dark:border-gray-800 rounded-3xl shadow-sm hover:shadow-xl hover:border-primary/30 dark:hover:border-primary/30 transition-all duration-300 transform hover:-translate-y-1 select-none cursor-pointer"
+    class="card group relative flex flex-col justify-between overflow-hidden bg-white dark:bg-gray-900 border border-gray-150 dark:border-gray-800 rounded-3xl shadow-sm hover:shadow-xl hover:border-primary/30 dark:hover:border-primary/30 transition-all duration-300 transform hover:-translate-y-1 select-none cursor-pointer"
     @click="goToDetail"
   >
     <!-- Card Top: Image & Badges -->
@@ -36,7 +36,7 @@
       <button
         @click.stop="toggleWishlist"
         class="absolute top-3.5 right-3.5 p-2 rounded-xl backdrop-blur-md transition-all duration-200 shadow z-10 hover:scale-110 active:scale-95 focus:outline-none"
-        :class="isInWishlist ? 'bg-red-550 text-white' : 'bg-white/80 dark:bg-gray-900/80 text-gray-500 hover:text-red-500 hover:bg-white dark:hover:bg-gray-850'"
+        :class="isInWishlist ? 'bg-red-550 text-white' : 'bg-white/80 dark:bg-gray-900/80 text-gray-500 hover:text-red-500 hover:bg-white dark:hover:bg-gray-800'"
         aria-label="Toggle Wishlist"
       >
         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -46,7 +46,7 @@
     </div>
 
     <!-- Card Bottom: Information Panel -->
-    <div class="p-4 flex-grow flex flex-col justify-between gap-3 bg-white dark:bg-gray-850 transition-colors">
+    <div class="p-4 flex-grow flex flex-col justify-between gap-3 bg-white dark:bg-gray-900 transition-colors">
       <div class="space-y-1">
         <!-- Category -->
         <span class="text-[10px] text-primary font-black uppercase tracking-widest block">

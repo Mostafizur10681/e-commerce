@@ -425,6 +425,7 @@ import { useCartStore } from '../stores/cartStore';
 import { useProductStore } from '../stores/productStore';
 import { useReviewStore } from '../stores/reviewStore';
 import { useToastStore } from '../stores/toastStore';
+import api from '../services/api';
 
 const route = useRoute();
 const router = useRouter();
@@ -477,7 +478,8 @@ function handleScroll() {
 // Computed SKU
 const sku = computed(() => {
   if (!product.value) return '';
-  return `FM-${product.value.category.substring(0, 3).toUpperCase()}-${String(product.value.id).padStart(4, '0')}`;
+  const categoryStr = typeof product.value.category === 'string' ? product.value.category : 'PRO';
+  return `FM-${categoryStr.substring(0, 3).toUpperCase()}-${String(product.value.id).padStart(4, '0')}`;
 });
 
 // Computed Discount percent
@@ -495,14 +497,43 @@ const relatedProducts = computed(() => {
 });
 
 // Load single product data helper
-function loadProduct(id) {
-  product.value = productStore.getProductById(id);
+async function loadProduct(id) {
+  try {
+    const response = await api.get(`/v1/products/${id}`);
+    if (response.data && response.data.success && response.data.data) {
+      const p = response.data.data;
+      product.value = {
+        id: p.id,
+        name: p.name,
+        category: p.category ? p.category.name : 'Uncategorized',
+        price: p.sale_price ? parseFloat(p.sale_price) : parseFloat(p.price),
+        originalPrice: p.sale_price ? parseFloat(p.price) : null,
+        unit: p.unit || '1 kg',
+        image: p.image || 'https://picsum.photos/seed/placeholder/400/400',
+        images: p.images && p.images.length ? p.images : [p.image || 'https://picsum.photos/seed/placeholder/400/400'],
+        rating: p.rating ? parseFloat(p.rating) : 5.0,
+        badge: p.sale_price ? 'Sale' : null,
+        description: p.description,
+        stock: p.stock
+      };
+      selectedImage.value = product.value.images?.[0] || product.value.image;
+    } else {
+      fallbackProduct(id);
+    }
+  } catch (error) {
+    console.error('Failed to load product from API, using fallback:', error);
+    fallbackProduct(id);
+  }
   reviews.value = reviewStore.getReviews(id);
+  quantity.value = 1;
+  activeTab.value = 'description';
+}
+
+function fallbackProduct(id) {
+  product.value = productStore.getProductById(id);
   if (product.value) {
     selectedImage.value = product.value.images?.[0] || product.value.image;
   }
-  quantity.value = 1;
-  activeTab.value = 'description';
 }
 
 // Watch route changes (such as clicking related products)

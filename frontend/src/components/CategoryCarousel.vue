@@ -18,13 +18,31 @@
 </template>
 
 <script setup>
-import categories from '../data/categories.json';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import api from '../services/api';
+import localCategories from '../data/categories.json';
+
 const router = useRouter();
+const categories = ref([]);
+
+onMounted(async () => {
+  try {
+    const response = await api.get('/v1/categories?all=true');
+    if (response.data && response.data.success && Array.isArray(response.data.data)) {
+      categories.value = response.data.data;
+    } else {
+      categories.value = localCategories;
+    }
+  } catch (error) {
+    console.error('Failed to fetch categories from API, using fallback:', error);
+    categories.value = localCategories;
+  }
+});
+
 function goToCategory(catName) {
   router.push({ name: 'CategoryProducts', params: { categoryName: catName } });
 }
-
 </script>
 
 <style scoped>

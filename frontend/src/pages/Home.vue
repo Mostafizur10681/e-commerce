@@ -67,7 +67,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import HeroSlider from '../components/HeroSlider.vue';
 import CategoryCarousel from '../components/CategoryCarousel.vue';
 import PromoBanner from '../components/PromoBanner.vue';
@@ -75,17 +75,54 @@ import ReviewSlider from '../components/ReviewSlider.vue';
 import PartnersSlider from '../components/PartnersSlider.vue';
 import Newsletter from '../components/Newsletter.vue';
 import ProductCard from '../components/ProductCard.vue';
-import products from '../data/products.json';
+import localProducts from '../data/products.json';
 import { useCartStore } from '../stores/cartStore';
 import { useToastStore } from '../stores/toastStore';
+import api from '../services/api';
 
 const cartStore = useCartStore();
 const toastStore = useToastStore();
 
+const productsList = ref([]);
 const visibleCount = ref(8);
 
+onMounted(async () => {
+  try {
+    const response = await api.get('/v1/products?per_page=100');
+    // Laravel API Controller index returns paginated structure under success trait
+    let apiProducts = [];
+    if (response.data && response.data.success) {
+      // Check if data is paginated or direct array
+      const resData = response.data.data;
+      apiProducts = Array.isArray(resData) ? resData : (resData.data || []);
+    }
+    
+    if (apiProducts.length > 0) {
+      productsList.value = apiProducts.map(p => ({
+        id: p.id,
+        name: p.name,
+        category: p.category ? p.category.name : 'Uncategorized',
+        price: p.sale_price ? parseFloat(p.sale_price) : parseFloat(p.price),
+        originalPrice: p.sale_price ? parseFloat(p.price) : null,
+        unit: p.unit || '1 kg',
+        image: p.image || 'https://picsum.photos/seed/placeholder/400/400',
+        images: p.images && p.images.length ? p.images : [p.image || 'https://picsum.photos/seed/placeholder/400/400'],
+        rating: p.rating ? parseFloat(p.rating) : 5.0,
+        badge: p.sale_price ? 'Sale' : null,
+        description: p.description,
+        stock: p.stock
+      }));
+    } else {
+      productsList.value = localProducts;
+    }
+  } catch (error) {
+    console.error('Failed to fetch products from API, using fallback:', error);
+    productsList.value = localProducts;
+  }
+});
+
 const visibleProducts = computed(() => {
-  return products.slice(0, visibleCount.value);
+  return productsList.value.slice(0, visibleCount.value);
 });
 
 function handleAdd(product) {
