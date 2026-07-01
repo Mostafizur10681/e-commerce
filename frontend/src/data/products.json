@@ -158,5 +158,205 @@
     "description": "Crispy salted potato chips for snack time.",
     "stock": 60,
     "reviews": []
+  },
+  {
+    "id": 9,
+    "name": "Almond Butter",
+    "category": "Spread",
+    "price": 240,
+    "originalPrice": null,
+    "unit": "200 g",
+    "image": "https://picsum.photos/seed/almond/400/400",
+    "images": [
+      "https://picsum.photos/seed/almond/400/400",
+      "https://picsum.photos/seed/almond2/400/400",
+      "https://picsum.photos/seed/almond3/400/400",
+      "https://picsum.photos/seed/almond4/400/400"
+    ],
+    "rating": 4.6,
+    "badge": "Organic",
+    "description": "Smooth almond butter, great for toast and smoothies.",
+    "stock": 22,
+    "reviews": []
+  },
+  {
+    "id": 10,
+    "name": "Greek Yogurt",
+    "category": "Dairy",
+    "price": 85,
+    "originalPrice": 100,
+    "unit": "500 g",
+    "image": "https://picsum.photos/seed/yogurt/400/400",
+    "images": [
+      "https://picsum.photos/seed/yogurt/400/400",
+      "https://picsum.photos/seed/yogurt2/400/400",
+      "https://picsum.photos/seed/yogurt3/400/400",
+      "https://picsum.photos/seed/yogurt4/400/400"
+    ],
+    "rating": 4.7,
+    "badge": "Sale",
+    "description": "Creamy Greek yogurt, high protein and low sugar.",
+    "stock": 35,
+    "reviews": []
+  },
+  {
+    "id": 11,
+    "name": "Quinoa",
+    "category": "Grains",
+    "price": 130,
+    "originalPrice": null,
+    "unit": "500 g",
+    "image": "https://picsum.photos/seed/quinoa/400/400",
+    "images": [
+      "https://picsum.photos/seed/quinoa/400/400",
+      "https://picsum.photos/seed/quinoa2/400/400",
+      "https://picsum.photos/seed/quinoa3/400/400",
+      "https://picsum.photos/seed/quinoa4/400/400"
+    ],
+    "rating": 4.5,
+    "badge": null,
+    "description": "Organic quinoa, a complete protein grain.",
+    "stock": 28,
+    "reviews": []
+  },
+  {
+    "id": 12,
+    "name": "Dark Chocolate",
+    "category": "Snacks",
+    "price": 70,
+    "originalPrice": 85,
+    "unit": "100 g",
+    "image": "https://picsum.photos/seed/chocolate/400/400",
+    "images": [
+      "https://picsum.photos/seed/chocolate/400/400",
+      "https://picsum.photos/seed/chocolate2/400/400",
+      "https://picsum.photos/seed/chocolate3/400/400",
+      "https://picsum.photos/seed/chocolate4/400/400"
+    ],
+    "rating": 4.8,
+    "badge": "Sale",
+    "description": "Rich dark chocolate, 70% cocoa.",
+    "stock": 40,
+    "reviews": []
+  },
+  {
+    "id": 13,
+    "name": "Basil Pesto",
+    "category": "Sauce",
+    "price": 150,
+    "originalPrice": null,
+    "unit": "180 g",
+    "image": "https://picsum.photos/seed/pesto/400/400",
+    "images": [
+      "https://picsum.photos/seed/pesto/400/400",
+      "https://picsum.photos/seed/pesto2/400/400",
+      "https://picsum.photos/seed/pesto3/400/400",
+      "https://picsum.photos/seed/pesto4/400/400"
+    ],
+    "rating": 4.4,
+    "badge": "Organic",
+    "description": "Fresh basil pesto, perfect for pasta.",
+    "stock": 18,
+    "reviews": []
+  },
+  {
+    "id": 14,
+    "name": "Lemon Tea",
+    "category": "Beverages",
+    "price": 55,
+    "originalPrice": null,
+    "unit": "20 bags",
+    "image": "https://picsum.photos/seed/tea/400/400",
+    "images": [
+      "https://picsum.photos/seed/tea/400/400",
+      "https://picsum.photos/seed/tea2/400/400",
+      "https://picsum.photos/seed/tea3/400/400",
+      "https://picsum.photos/seed/tea4/400/400"
+    ],
+    "rating": 4.3,
+    "badge": null,
+    "description": "Refreshing lemon tea bags.",
+    "stock": 50,
+    "reviews": []
+  },
+  {
+    "id": 15,
+    "name": "Sunflower Oil",
+    "category": "Cooking Oil",
+    "price": 110,
+    "originalPrice": 130,
+    "unit": "1 L",
+    "image": "https://picsum.photos/seed/oil/400/400",
+    "images": [
+      "https://picsum.photos/seed/oil/400/400",
+      "https://picsum.photos/seed/oil2/400/400",
+      "https://picsum.photos/seed/oil3/400/400",
+      "https://picsum.photos/seed/oil4/400/400"
+    ],
+    "rating": 4.5,
+    "badge": "Sale",
+    "description": "Cold-pressed sunflower oil, high in Vitamin E.",
+    "stock": 45,
+    "reviews": []
+  },
+  {
+    "id": 16,
+    "name": "Granola Bars",
+    "category": "Snacks",
+    "price": 95,
+    "originalPrice": null,
+    "unit": "6 pcs",
+    "image": "https://picsum.photos/seed/granola/400/400",
+    "images": [
+      "https://picsum.photos/seed/granola/400/400",
+      "https://picsum.photos/seed/granola2/400/400",
+      "https://picsum.photos/seed/granola3/400/400",
+      "https://picsum.photos/seed/granola4/400/400"
+    ],
+    "rating": 4.6,
+    "badge": null,
+    "description": "Healthy oatmeal granola bars with nuts.",
+    "stock": 32,
+    "reviews": []
+  },
+  {
+    "id": 17,
+    "name": "Herbal Shampoo",
+    "category": "Personal Care",
+    "price": 180,
+    "originalPrice": 210,
+    "unit": "250 ml",
+    "image": "https://picsum.photos/seed/shampoo/400/400",
+    "images": [
+      "https://picsum.photos/seed/shampoo/400/400",
+      "https://picsum.photos/seed/shampoo2/400/400",
+      "https://picsum.photos/seed/shampoo3/400/400",
+      "https://picsum.photos/seed/shampoo4/400/400"
+    ],
+    "rating": 4.2,
+    "badge": "Organic",
+    "description": "Gentle herbal shampoo for all hair types.",
+    "stock": 20,
+    "reviews": []
+  },
+  {
+    "id": 18,
+    "name": "Coconut Water",
+    "category": "Beverages",
+    "price": 70,
+    "originalPrice": null,
+    "unit": "1 L",
+    "image": "https://picsum.photos/seed/coconut/400/400",
+    "images": [
+      "https://picsum.photos/seed/coconut/400/400",
+      "https://picsum.photos/seed/coconut2/400/400",
+      "https://picsum.photos/seed/coconut3/400/400",
+      "https://picsum.photos/seed/coconut4/400/400"
+    ],
+    "rating": 4.5,
+    "badge": null,
+    "description": "Pure natural coconut water, no added sugar.",
+    "stock": 55,
+    "reviews": []
   }
 ]

@@ -19,11 +19,35 @@
         <!-- Responsive grid -->
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
           <ProductCard
-            v-for="product in products"
+            v-for="product in visibleProducts"
             :key="product.id"
             :product="product"
             @addToCart="handleAdd"
           />
+        </div>
+
+        <!-- See More / View All Button -->
+        <div class="flex justify-center mt-12">
+          <router-link
+            to="/shop"
+            class="btn-primary flex items-center gap-2 group"
+          >
+            <span>See More</span>
+            <svg
+              class="w-4 h-4 transform group-hover:translate-y-0.5 transition-transform duration-200"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 9l-7 7-7-7"
+              ></path>
+            </svg>
+          </router-link>
         </div>
       </div>
     </section>
@@ -43,6 +67,7 @@
 </template>
 
 <script setup>
+import { ref, computed } from 'vue';
 import HeroSlider from '../components/HeroSlider.vue';
 import CategoryCarousel from '../components/CategoryCarousel.vue';
 import PromoBanner from '../components/PromoBanner.vue';
@@ -56,6 +81,12 @@ import { useToastStore } from '../stores/toastStore';
 
 const cartStore = useCartStore();
 const toastStore = useToastStore();
+
+const visibleCount = ref(8);
+
+const visibleProducts = computed(() => {
+  return products.slice(0, visibleCount.value);
+});
 
 function handleAdd(product) {
   cartStore.addToCart(product);
