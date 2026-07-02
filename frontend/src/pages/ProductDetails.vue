@@ -98,7 +98,15 @@
               <!-- Sale Badge -->
               <span
                 v-if="product.badge"
-                class="absolute top-4 left-4 px-3 py-1 text-xs font-black bg-red-500 text-white rounded-full uppercase tracking-wider shadow"
+                class="absolute top-4 left-4 px-3 py-1 text-xs font-black text-white rounded-full uppercase tracking-wider shadow"
+                :class="{
+                  'bg-emerald-500': product.badge === 'Organic',
+                  'bg-blue-500': product.badge === 'New',
+                  'bg-orange-500': product.badge === 'Best Seller',
+                  'bg-yellow-500 !text-gray-900': product.badge === 'Featured',
+                  'bg-red-500': product.badge === 'Sale',
+                  'bg-primary': !['Organic', 'New', 'Best Seller', 'Featured', 'Sale'].includes(product.badge)
+                }"
               >
                 {{ product.badge }}
               </span>
@@ -155,11 +163,11 @@
             <div class="grid grid-cols-2 gap-4 py-3 border-y border-gray-200 dark:border-gray-800 text-sm">
               <div>
                 <span class="text-gray-500 dark:text-gray-400">Brand:</span>
-                <span class="ml-1.5 font-bold text-gray-850 dark:text-gray-200">FreshMart</span>
+                <span class="ml-1.5 font-bold text-gray-850 dark:text-gray-200">{{ product?.brand || 'No Brand' }}</span>
               </div>
               <div>
                 <span class="text-gray-500 dark:text-gray-400">SKU:</span>
-                <span class="ml-1.5 font-mono font-bold text-gray-850 dark:text-gray-200">{{ sku }}</span>
+                <span class="ml-1.5 font-mono font-bold text-gray-850 dark:text-gray-200">{{ product?.sku || 'N/A' }}</span>
               </div>
             </div>
 
@@ -604,12 +612,7 @@ function handleScroll() {
   showStickyBar.value = window.scrollY > 500;
 }
 
-// Computed SKU
-const sku = computed(() => {
-  if (!product.value) return '';
-  const categoryStr = typeof product.value.category === 'string' ? product.value.category : 'PRO';
-  return `FM-${categoryStr.substring(0, 3).toUpperCase()}-${String(product.value.id).padStart(4, '0')}`;
-});
+
 
 // Computed Discount percent
 const discountPercent = computed(() => {
@@ -642,10 +645,12 @@ async function loadProduct(id) {
         image: p.image || 'https://picsum.photos/seed/placeholder/400/400',
         images: p.images && p.images.length ? p.images : [p.image || 'https://picsum.photos/seed/placeholder/400/400'],
         rating: p.rating ? parseFloat(p.rating) : 5.0,
-        badge: p.sale_price ? 'Sale' : null,
+        badge: p.featured ? 'Featured' : (p.best_seller ? 'Best Seller' : (p.organic ? 'Organic' : (p.new_arrival ? 'New' : (p.sale_price ? 'Sale' : null)))),
         description: p.description,
         stock: p.stock,
-        attributes: p.attributes || []
+        attributes: p.attributes || [],
+        brand: p.brand || 'No Brand',
+        sku: p.SKU || ''
       };
       selectedImage.value = product.value.images?.[0] || product.value.image;
     } else {

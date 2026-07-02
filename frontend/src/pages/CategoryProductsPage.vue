@@ -18,33 +18,80 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import ProductCard from '../components/ProductCard.vue';
-import products from '../data/products.json';
+import localProducts from '../data/products.json';
 import { useCartStore } from '@/stores/cartStore';
 import { useToastStore } from '@/stores/toastStore';
+import api from '@/services/api';
 
 const route = useRoute();
 const cartStore = useCartStore();
 const toastStore = useToastStore();
 
+const productsList = ref([]);
+const loading = ref(true);
+
 const categoryName = computed(() => String(route.params.categoryName || '').toLowerCase());
+const categoryTitle = computed(() => {
+  const name = route.params.categoryName || '';
+  return name.charAt(0).toUpperCase() + name.slice(1);
+});
 
 const filteredProducts = computed(() =>
-  products.filter(p => p.category && p.category.toLowerCase() === categoryName.value)
+  productsList.value.filter(p => p.category && p.category.toLowerCase() === categoryName.value)
 );
+
+const fetchProducts = async () => {
+  loading.value = true;
+  try {
+    const response = await api.get('/v1/products?per_page=100');
+    let apiProducts = [];
+    if (response.data && response.data.success) {
+      const resData = response.data.data;
+      apiProducts = Array.isArray(resData) ? resData : (resData.data || []);
+    }
+    
+    if (apiProducts.length > 0) {
+      productsList.value = apiProducts.map(p => ({
+        id: p.id,
+        name: p.name,
+        category: p.category ? p.category.name : 'Uncategorized',
+        price: p.sale_price ? parseFloat(p.sale_price) : parseFloat(p.price),
+        originalPrice: p.sale_price ? parseFloat(p.price) : null,
+        unit: p.unit || '1 kg',
+        image: p.image || 'https://picsum.photos/seed/placeholder/400/400',
+        images: p.images && p.images.length ? p.images : [p.image || 'https://picsum.photos/seed/placeholder/400/400'],
+        rating: p.rating ? parseFloat(p.rating) : 5.0,
+        badge: p.featured ? 'Featured' : (p.best_seller ? 'Best Seller' : (p.organic ? 'Organic' : (p.new_arrival ? 'New' : (p.sale_price ? 'Sale' : null)))),
+        description: p.description,
+        stock: p.stock
+      }));
+    } else {
+      productsList.value = localProducts;
+    }
+  } catch (error) {
+    console.error('Failed to fetch products from API, using fallback:', error);
+    productsList.value = localProducts;
+  } finally {
+    loading.value = false;
+  }
+};
+
+onMounted(() => {
+  fetchProducts();
+});
+
+watch(() => route.params.categoryName, () => {
+  // Products list already has all products, just the computed filteredProducts will update.
+  // If we wanted to re-fetch on every route change, we could do so here.
+});
 
 const handleAdd = (product) => {
   cartStore.addToCart(product);
   toastStore.show('Successfully product added');
 };
-
-const categoryTitle = computed(() => {
-  // Capitalize first letter for display
-  const name = route.params.categoryName || '';
-  return name.charAt(0).toUpperCase() + name.slice(1);
-});
 </script>
 
 <style scoped>

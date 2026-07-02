@@ -26,7 +26,13 @@
         <span
           v-else-if="product.badge"
           class="px-2.5 py-1 text-[10px] font-black uppercase rounded-lg shadow-sm"
-          :class="product.badge === 'Organic' ? 'bg-emerald-500 text-white' : 'bg-primary text-white'"
+          :class="{
+            'bg-emerald-500 text-white': product.badge === 'Organic',
+            'bg-blue-500 text-white': product.badge === 'New',
+            'bg-orange-500 text-white': product.badge === 'Best Seller',
+            'bg-yellow-500 text-gray-900': product.badge === 'Featured',
+            'bg-primary text-white': !['Organic', 'New', 'Best Seller', 'Featured'].includes(product.badge)
+          }"
         >
           {{ product.badge }}
         </span>

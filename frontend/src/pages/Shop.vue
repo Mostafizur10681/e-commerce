@@ -377,7 +377,7 @@ onMounted(async () => {
         image: p.image || 'https://picsum.photos/seed/placeholder/400/400',
         images: p.images && p.images.length ? p.images : [p.image || 'https://picsum.photos/seed/placeholder/400/400'],
         rating: p.rating ? parseFloat(p.rating) : 5.0,
-        badge: p.sale_price ? 'Sale' : null,
+        badge: p.featured ? 'Featured' : (p.best_seller ? 'Best Seller' : (p.organic ? 'Organic' : (p.new_arrival ? 'New' : (p.sale_price ? 'Sale' : null)))),
         description: p.description,
         stock: p.stock
       }));
