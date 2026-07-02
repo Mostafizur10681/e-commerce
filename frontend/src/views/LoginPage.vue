@@ -162,12 +162,13 @@
 
 <script setup>
 import { ref, reactive } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import authBg from '../assets/auth-bg.png';
 import { useAuthStore } from '../stores/authStore';
 import { useToastStore } from '../stores/toastStore';
 
 const router = useRouter();
+const route = useRoute();
 const authStore = useAuthStore();
 const toastStore = useToastStore();
 
@@ -223,7 +224,8 @@ async function handleLogin() {
 
   if (result.success) {
     toastStore.show('Login successful', 'success');
-    router.push('/myaccount/dashboard');
+    const redirectPath = route.query.redirect || '/myaccount/dashboard';
+    router.push(redirectPath);
   } else {
     if (result.errors) {
       Object.keys(result.errors).forEach((key) => {
@@ -238,6 +240,7 @@ async function handleLogin() {
     }
   }
 }
+
 </script>
 
 <style scoped>

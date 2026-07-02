@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import api from '../services/api';
 
 export const useReviewStore = defineStore('review', {
   state: () => ({
@@ -11,11 +12,43 @@ export const useReviewStore = defineStore('review', {
     }
   },
   actions: {
-    addReview(productId, review) {
-      if (!this.reviewsMap[productId]) {
-        this.reviewsMap[productId] = [];
+    async fetchReviews(productId) {
+      try {
+        const response = await api.get('/reviews', { params: { product_id: productId } });
+        if (response.data && response.data.success) {
+          const data = response.data.data;
+          const reviews = Array.isArray(data) ? data : (data.data || []);
+          this.reviewsMap[productId] = reviews.map(r => ({
+            name: r.user ? r.user.name : 'Anonymous',
+            rating: r.rating,
+            comment: r.comment,
+            date: r.created_at ? new Date(r.created_at).toLocaleDateString() : ''
+          }));
+        }
+      } catch (error) {
+        console.error('Failed to fetch reviews:', error);
       }
-      this.reviewsMap[productId].push(review);
+    },
+    async addReview(productId, reviewData) {
+      try {
+        const response = await api.post('/customer/reviews', {
+          product_id: productId,
+          rating: reviewData.rating,
+          comment: reviewData.comment
+        });
+        if (response.data && response.data.success) {
+          await this.fetchReviews(productId);
+          return { success: true };
+        }
+        return { success: false, error: response.data.message || 'Failed to submit review' };
+      } catch (error) {
+        console.error('Failed to add review:', error);
+        let errorMsg = 'Failed to submit review';
+        if (error.response && error.response.data) {
+          errorMsg = error.response.data.message || errorMsg;
+        }
+        return { success: false, error: errorMsg };
+      }
     }
   }
 });

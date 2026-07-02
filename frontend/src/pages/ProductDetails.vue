@@ -172,6 +172,48 @@
               </span>
             </div>
 
+            <!-- Attribute Selectors -->
+            <div v-if="product.attributes && product.attributes.length > 0" class="space-y-4">
+              <div
+                v-for="group in groupedAttributes"
+                :key="group.name"
+                class="space-y-2"
+              >
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-black text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ group.name }}</span>
+                  <span v-if="selectedAttributes[group.name]" class="text-xs font-bold text-primary">: {{ selectedAttributes[group.name] }}</span>
+                </div>
+                <!-- Color swatches for 'Color' attribute -->
+                <div v-if="group.name.toLowerCase() === 'color'" class="flex flex-wrap gap-2">
+                  <button
+                    v-for="val in group.values"
+                    :key="val"
+                    type="button"
+                    @click="selectAttribute(group.name, val)"
+                    :title="val"
+                    class="w-9 h-9 rounded-full border-2 transition-all duration-200 hover:scale-110 active:scale-95 focus:outline-none shadow-sm"
+                    :style="{ backgroundColor: colorMap[val.toLowerCase()] || val.toLowerCase() }"
+                    :class="selectedAttributes[group.name] === val
+                      ? 'border-primary ring-2 ring-primary/30 scale-110'
+                      : 'border-gray-200 dark:border-gray-700'"
+                  ></button>
+                </div>
+                <!-- Pill buttons for all other attributes -->
+                <div v-else class="flex flex-wrap gap-2">
+                  <button
+                    v-for="val in group.values"
+                    :key="val"
+                    type="button"
+                    @click="selectAttribute(group.name, val)"
+                    class="px-3.5 py-1.5 rounded-lg text-sm font-bold border-2 transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none"
+                    :class="selectedAttributes[group.name] === val
+                      ? 'border-primary bg-primary text-white shadow-md'
+                      : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 hover:border-primary/50'"
+                  >{{ val }}</button>
+                </div>
+              </div>
+            </div>
+
             <!-- Quantity Selector -->
             <div class="space-y-2.5">
               <span class="block text-xs font-black text-gray-500 dark:text-gray-400 uppercase tracking-wider">Select Quantity</span>
@@ -195,7 +237,7 @@
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
                   </button>
                 </div>
-                <span class="text-sm font-semibold text-gray-500 dark:text-gray-400" v-if="product.unit">Per {{ product.unit }}</span>
+                  <span class="text-sm font-semibold text-gray-500 dark:text-gray-400" v-if="product.unit">Per {{ product.unit.replace(/^\d+\s*/, '') }}</span>
               </div>
             </div>
 
@@ -280,6 +322,30 @@
             <div v-if="activeTab === 'description'" class="text-gray-650 dark:text-gray-300 leading-relaxed text-sm space-y-4">
               <p>{{ product.description }}</p>
               <p>FreshMart delivers premium quality grocery supplies straight to your doorstep. All our produce items are sourced carefully from verified agricultural cooperatives, ensuring you get maximum taste, nutritional value, and absolute freshness every day.</p>
+              
+              <!-- Specifications Table -->
+              <div v-if="groupedAttributes.length > 0" class="mt-6 rounded-2xl overflow-hidden border border-gray-150 dark:border-gray-800 max-w-xl">
+                <div class="bg-gray-50 dark:bg-gray-800/60 px-4 py-2.5 flex items-center gap-2 border-b border-gray-150 dark:border-gray-800">
+                  <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                  <span class="text-xs font-black text-gray-500 dark:text-gray-400 uppercase tracking-wider">Specifications</span>
+                </div>
+                <div class="divide-y divide-gray-100 dark:divide-gray-800">
+                  <div
+                    v-for="group in groupedAttributes"
+                    :key="group.name"
+                    class="flex items-center gap-4 px-4 py-3 hover:bg-gray-50/60 dark:hover:bg-gray-800/20 transition-colors"
+                  >
+                    <span class="w-28 shrink-0 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wide">{{ group.name }}</span>
+                    <div class="flex flex-wrap gap-1.5">
+                      <span
+                        v-for="val in group.values"
+                        :key="val"
+                        class="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-primary/10 text-primary dark:bg-primary/20"
+                      >{{ val }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <!-- Tab 2: Reviews -->
@@ -314,7 +380,20 @@
               <!-- Add Review Form -->
               <div class="p-6 bg-gray-50/50 dark:bg-gray-850/30 rounded-2xl border border-gray-150 dark:border-gray-800">
                 <h4 class="font-bold text-base text-gray-950 dark:text-white mb-4">Write a Product Review</h4>
-                <form @submit.prevent="submitReview" class="space-y-4">
+                
+                <div v-if="!isAuthenticated" class="text-center py-6">
+                  <p class="text-gray-600 dark:text-gray-400 mb-4 font-semibold text-sm">
+                    You must be logged in to post a review for this product.
+                  </p>
+                  <button
+                    @click="redirectToLogin"
+                    class="inline-flex items-center justify-center px-6 py-2.5 bg-primary hover:bg-primary-dark text-white font-bold rounded-xl shadow-sm hover:shadow active:scale-98 transition duration-200 focus:outline-none"
+                  >
+                    Login to Review
+                  </button>
+                </div>
+                
+                <form v-else @submit.prevent="submitReview" class="space-y-4">
                   <div>
                     <label class="block text-xs font-black text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Your Rating</label>
                     <div class="flex items-center gap-1">
@@ -344,8 +423,8 @@
                         v-model="newReview.name"
                         type="text"
                         placeholder="Your Name"
-                        required
-                        class="w-full p-3.5 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-sm focus:ring-2 focus:ring-primary focus:outline-none transition-all"
+                        disabled
+                        class="w-full p-3.5 border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-100 dark:bg-gray-800 text-sm focus:outline-none transition-all cursor-not-allowed opacity-75"
                       />
                     </div>
                   </div>
@@ -425,6 +504,7 @@ import { useCartStore } from '../stores/cartStore';
 import { useProductStore } from '../stores/productStore';
 import { useReviewStore } from '../stores/reviewStore';
 import { useToastStore } from '../stores/toastStore';
+import { useAuthStore } from '../stores/authStore';
 import api from '../services/api';
 
 const route = useRoute();
@@ -434,16 +514,65 @@ const productStore = useProductStore();
 const cartStore = useCartStore();
 const reviewStore = useReviewStore();
 const toast = useToastStore();
+const authStore = useAuthStore();
 
 const product = ref(null);
 const reviews = ref([]);
 
-const newReview = ref({ name: '', rating: 0, comment: '' });
+const isAuthenticated = computed(() => authStore.currentUser !== null);
+
+const newReview = ref({
+  name: authStore.currentUser ? authStore.currentUser.name : '',
+  rating: 0,
+  comment: ''
+});
+
+watch(() => authStore.currentUser, (newVal) => {
+  if (newVal) {
+    newReview.value.name = newVal.name;
+  } else {
+    newReview.value.name = '';
+  }
+}, { immediate: true });
+
 const hoverRating = ref(0);
 
 const selectedImage = ref('');
 const quantity = ref(1);
 const activeTab = ref('description');
+
+// Attribute selection state
+const selectedAttributes = ref({});
+
+// Color name → CSS color mapping
+const colorMap = {
+  red: '#ef4444', blue: '#3b82f6', green: '#22c55e', yellow: '#eab308',
+  orange: '#f97316', purple: '#a855f7', pink: '#ec4899', black: '#111827',
+  white: '#f9fafb', gray: '#6b7280', grey: '#6b7280', brown: '#92400e',
+  navy: '#1e3a5f', teal: '#14b8a6', cyan: '#06b6d4', indigo: '#6366f1',
+  lime: '#84cc16', emerald: '#10b981', violet: '#7c3aed', rose: '#f43f5e',
+};
+
+// Group attributes: [{ name: 'Color', values: ['Blue','Red'] }, { name: 'Size', values: ['S','M','L'] }]
+const groupedAttributes = computed(() => {
+  if (!product.value || !product.value.attributes) return [];
+  const map = {};
+  for (const attr of product.value.attributes) {
+    if (!map[attr.name]) map[attr.name] = [];
+    if (!map[attr.name].includes(attr.value)) {
+      map[attr.name].push(attr.value);
+    }
+  }
+  return Object.entries(map).map(([name, values]) => ({ name, values }));
+});
+
+function selectAttribute(name, value) {
+  selectedAttributes.value = { ...selectedAttributes.value, [name]: value };
+}
+
+function resetAttributes() {
+  selectedAttributes.value = {};
+}
 
 // Interactive zoom coordinates
 const activeZoom = ref(false);
@@ -508,13 +637,15 @@ async function loadProduct(id) {
         category: p.category ? p.category.name : 'Uncategorized',
         price: p.sale_price ? parseFloat(p.sale_price) : parseFloat(p.price),
         originalPrice: p.sale_price ? parseFloat(p.price) : null,
-        unit: p.unit || '1 kg',
+        // Determine unit: use explicit unit field, or fallback to attribute named 'unit', else default to '1 kg'
+        unit: p.unit || (p.attributes?.find(attr => attr.name.toLowerCase() === 'unit')?.value) || '1 kg',
         image: p.image || 'https://picsum.photos/seed/placeholder/400/400',
         images: p.images && p.images.length ? p.images : [p.image || 'https://picsum.photos/seed/placeholder/400/400'],
         rating: p.rating ? parseFloat(p.rating) : 5.0,
         badge: p.sale_price ? 'Sale' : null,
         description: p.description,
-        stock: p.stock
+        stock: p.stock,
+        attributes: p.attributes || []
       };
       selectedImage.value = product.value.images?.[0] || product.value.image;
     } else {
@@ -524,9 +655,11 @@ async function loadProduct(id) {
     console.error('Failed to load product from API, using fallback:', error);
     fallbackProduct(id);
   }
+  await reviewStore.fetchReviews(id);
   reviews.value = reviewStore.getReviews(id);
   quantity.value = 1;
   activeTab.value = 'description';
+  resetAttributes();
 }
 
 function fallbackProduct(id) {
@@ -581,18 +714,34 @@ function buyNow() {
   router.push({ name: 'Checkout' });
 }
 
-function submitReview() {
+function redirectToLogin() {
+  router.push({ name: 'Login', query: { redirect: route.fullPath } });
+}
+
+async function submitReview() {
   const currentId = Number(route.params.id);
   if (!newReview.value.rating) {
     toast.show('Please select a rating');
     return;
   }
-  if (!newReview.value.name || !newReview.value.comment) return;
-  const rev = { ...newReview.value, date: new Date().toLocaleDateString() };
-  reviewStore.addReview(currentId, rev);
-  reviews.value = reviewStore.getReviews(currentId);
-  toast.show('Review submitted successfully');
-  newReview.value = { name: '', rating: 0, comment: '' };
+  if (!newReview.value.comment) return;
+  
+  const res = await reviewStore.addReview(currentId, {
+    rating: newReview.value.rating,
+    comment: newReview.value.comment
+  });
+  
+  if (res.success) {
+    reviews.value = reviewStore.getReviews(currentId);
+    toast.show('Review submitted successfully');
+    newReview.value = {
+      name: authStore.currentUser ? authStore.currentUser.name : '',
+      rating: 0,
+      comment: ''
+    };
+  } else {
+    toast.show(res.error || 'Failed to submit review');
+  }
 }
 </script>
 
