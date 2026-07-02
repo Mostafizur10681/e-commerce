@@ -70,36 +70,57 @@
             />
           </div>
 
-          <!-- District + Thana (2 cols) -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label for="district" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+          <!-- Division + District + Thana (3 cols) -->
+          <div class="grid grid-cols-12 gap-4">
+            <div class="col-span-12 lg:col-span-4">
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                Division <span class="text-red-500">*</span>
+              </label>
+              <Multiselect
+                v-model="form.division"
+                :options="divisions"
+                label="division_name"
+                track-by="id"
+                value-prop="id"
+                :object="true"
+                placeholder="Select Division"
+                :searchable="true"
+                class="w-full text-sm"
+              />
+            </div>
+            <div class="col-span-12 lg:col-span-4">
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                 District <span class="text-red-500">*</span>
               </label>
-              <select
+              <Multiselect
                 v-model="form.district"
-                id="district"
-                required
-                class="w-full rounded-xl px-4 py-3 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-200 appearance-none cursor-pointer"
-              >
-                <option value="" disabled>Select a district</option>
-                <option v-for="dist in districts" :key="dist" :value="dist">{{ dist }}</option>
-              </select>
+                :options="districts"
+                label="district_name"
+                track-by="id"
+                value-prop="id"
+                :object="true"
+                :disabled="!form.division"
+                placeholder="Select District"
+                :searchable="true"
+                class="w-full text-sm"
+              />
             </div>
-            <div>
-              <label for="thana" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+            <div class="col-span-12 lg:col-span-4">
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                 Thana <span class="text-red-500">*</span>
               </label>
-              <select
+              <Multiselect
                 v-model="form.thana"
-                id="thana"
+                :options="filteredThanas"
+                label="thana_name"
+                track-by="id"
+                value-prop="id"
+                :object="true"
                 :disabled="!form.district"
-                required
-                class="w-full rounded-xl px-4 py-3 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-200 appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <option value="" disabled>Select District First</option>
-                <option v-for="th in filteredThanas" :key="th" :value="th">{{ th }}</option>
-              </select>
+                placeholder="Select Thana"
+                :searchable="true"
+                class="w-full text-sm"
+              />
             </div>
           </div>
 
@@ -239,14 +260,15 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue';
+import Multiselect from '@vueform/multiselect';
+import '@vueform/multiselect/themes/default.css';
 import { useRouter } from 'vue-router';
 import { useCartStore } from '@/stores/cartStore';
 import { useToastStore } from '@/stores/toastStore';
 import { useAuthStore } from '@/stores/authStore';
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
-import { allDistricts } from '@bangladeshi/bangladesh-address/build/src/district/index.js';
-import bdThana from '@bangladeshi/bangladesh-address/build/src/json/bd-thana.json';
+import api from '@/services/api';
 
 const router = useRouter();
 const cartStore = useCartStore();
@@ -258,22 +280,60 @@ const totalPrice = computed(() => cartStore.totalPrice);
 
 const isLoading = ref(false);
 
-const districts = allDistricts();
+const divisions = ref([]);
+const districts = ref([]);
+const filteredThanas = ref([]);
 
 const form = ref({
   fullName: '',
   phone: '',
   address: '',
-  district: '',
-  thana: '',
+  division: null,
+  district: null,
+  thana: null,
   email: ''
 });
 
-onMounted(() => {
+onMounted(async () => {
   if (authStore.currentUser) {
     form.value.fullName = authStore.currentUser.name || '';
     form.value.phone = authStore.currentUser.phone || '';
     form.value.email = authStore.currentUser.email || '';
+  }
+  
+  try {
+    const res = await api.get('/v1/divisions?per_page=100');
+    if (res.data?.success) divisions.value = res.data.data.data || res.data.data;
+  } catch (err) {
+    console.error('Failed to load divisions', err);
+  }
+});
+
+watch(() => form.value.division, async (newDiv) => {
+  form.value.district = null;
+  form.value.thana = null;
+  districts.value = [];
+  filteredThanas.value = [];
+  if (newDiv) {
+    try {
+      const res = await api.get(`/v1/districts?division_id=${newDiv.id}&per_page=500`);
+      if (res.data?.success) districts.value = res.data.data.data || res.data.data;
+    } catch (err) {
+      console.error('Failed to load districts', err);
+    }
+  }
+});
+
+watch(() => form.value.district, async (newDist) => {
+  form.value.thana = null;
+  filteredThanas.value = [];
+  if (newDist) {
+    try {
+      const res = await api.get(`/v1/thanas?district_id=${newDist.id}&per_page=500`);
+      if (res.data?.success) filteredThanas.value = res.data.data.data || res.data.data;
+    } catch (err) {
+      console.error('Failed to load thanas', err);
+    }
   }
 });
 
@@ -321,16 +381,10 @@ const placeOrder = async () => {
     toast.show(`Your Order ID: ${order.orderId}`);
     cartStore.clearCart();
     // Reset form
-    form.value = { fullName: '', phone: '', address: '', district: '', thana: '', email: '' };
+    form.value = { fullName: '', phone: '', address: '', division: null, district: null, thana: null, email: '' };
     isLoading.value = false;
     router.push({ name: 'Home' });
 };
-const filteredThanas = computed(() => {
-  if (!form.value.district) return [];
-  return bdThana
-    .filter(item => item.district === form.value.district)
-    .map(item => item.thana);
-});
 
 const downloadPDF = async () => {
   const element = document.getElementById('order-summary');

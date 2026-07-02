@@ -55,38 +55,57 @@
               </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <!-- District -->
-              <div>
-                <label for="district" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">
+            <!-- Division + District + Thana (3 cols) -->
+            <div class="grid grid-cols-12 gap-4">
+              <div class="col-span-12 lg:col-span-4">
+                <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5 uppercase tracking-wider">
+                  Division <span class="text-red-500">*</span>
+                </label>
+                <Multiselect
+                  v-model="form.division"
+                  :options="divisions"
+                  label="division_name"
+                  track-by="id"
+                  value-prop="id"
+                  :object="true"
+                  placeholder="Select Division"
+                  :searchable="true"
+                  class="w-full text-sm"
+                />
+              </div>
+              <div class="col-span-12 lg:col-span-4">
+                <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5 uppercase tracking-wider">
                   District <span class="text-red-500">*</span>
                 </label>
-                <select
+                <Multiselect
                   v-model="form.district"
-                  id="district"
-                  required
-                  class="w-full rounded-xl px-4 py-2.5 text-sm bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 text-gray-950 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent cursor-pointer"
-                >
-                  <option value="" disabled>Select district</option>
-                  <option v-for="dist in districts" :key="dist" :value="dist">{{ dist }}</option>
-                </select>
+                  :options="districts"
+                  label="district_name"
+                  track-by="id"
+                  value-prop="id"
+                  :object="true"
+                  :disabled="!form.division"
+                  placeholder="Select District"
+                  :searchable="true"
+                  class="w-full text-sm"
+                />
               </div>
-
-              <!-- Thana -->
-              <div>
-                <label for="thana" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">
+              <div class="col-span-12 lg:col-span-4">
+                <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5 uppercase tracking-wider">
                   Thana <span class="text-red-500">*</span>
                 </label>
-                <select
+                <Multiselect
                   v-model="form.thana"
-                  id="thana"
+                  :options="filteredThanas"
+                  label="thana_name"
+                  track-by="id"
+                  value-prop="id"
+                  :object="true"
                   :disabled="!form.district"
-                  required
-                  class="w-full rounded-xl px-4 py-2.5 text-sm bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 text-gray-950 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent cursor-pointer disabled:opacity-50"
-                >
-                  <option value="" disabled>Select Thana</option>
-                  <option v-for="th in filteredThanas" :key="th" :value="th">{{ th }}</option>
-                </select>
+                  placeholder="Select Thana"
+                  :searchable="true"
+                  class="w-full text-sm"
+                />
               </div>
             </div>
 
@@ -171,11 +190,10 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import { useAuthStore } from '../../stores/authStore';
 import { useToastStore } from '../../stores/toastStore';
-import { allDistricts } from '@bangladeshi/bangladesh-address/build/src/district/index.js';
-import bdThana from '@bangladeshi/bangladesh-address/build/src/json/bd-thana.json';
+import api from '../../services/api';
 
 const authStore = useAuthStore();
 const toastStore = useToastStore();
@@ -185,25 +203,55 @@ const isFormOpen = ref(false);
 const isEditing = ref(false);
 const editingId = ref(null);
 
+const divisions = ref([]);
+const districts = ref([]);
+const filteredThanas = ref([]);
+
 const form = ref({
   fullName: '',
   phone: '',
-  district: '',
-  thana: '',
+  division: null,
+  district: null,
+  thana: null,
   address: ''
 });
 
-const districts = allDistricts();
-
-const filteredThanas = computed(() => {
-  if (!form.value.district) return [];
-  return bdThana
-    .filter(item => item.district === form.value.district)
-    .map(item => item.thana);
+onMounted(async () => {
+  loadAddresses();
+  try {
+    const res = await api.get('/v1/divisions?per_page=100');
+    if (res.data?.success) divisions.value = res.data.data.data || res.data.data;
+  } catch (err) {
+    console.error('Failed to load divisions', err);
+  }
 });
 
-onMounted(() => {
-  loadAddresses();
+watch(() => form.value.division, async (newDiv) => {
+  form.value.district = null;
+  form.value.thana = null;
+  districts.value = [];
+  filteredThanas.value = [];
+  if (newDiv) {
+    try {
+      const res = await api.get(`/v1/districts?division_id=${newDiv.id}&per_page=500`);
+      if (res.data?.success) districts.value = res.data.data.data || res.data.data;
+    } catch (err) {
+      console.error('Failed to load districts', err);
+    }
+  }
+});
+
+watch(() => form.value.district, async (newDist) => {
+  form.value.thana = null;
+  filteredThanas.value = [];
+  if (newDist) {
+    try {
+      const res = await api.get(`/v1/thanas?district_id=${newDist.id}&per_page=500`);
+      if (res.data?.success) filteredThanas.value = res.data.data.data || res.data.data;
+    } catch (err) {
+      console.error('Failed to load thanas', err);
+    }
+  }
 });
 
 function loadAddresses() {
@@ -218,7 +266,7 @@ function loadAddresses() {
 }
 
 function openAddForm() {
-  form.value = { fullName: '', phone: '', district: '', thana: '', address: '' };
+  form.value = { fullName: '', phone: '', division: null, district: null, thana: null, address: '' };
   isEditing.value = false;
   editingId.value = null;
   isFormOpen.value = true;
@@ -241,6 +289,7 @@ function saveAddress() {
         ...addresses.value[idx],
         fullName: form.value.fullName,
         phone: form.value.phone,
+        division: form.value.division,
         district: form.value.district,
         thana: form.value.thana,
         address: form.value.address
@@ -252,6 +301,7 @@ function saveAddress() {
       id: Date.now().toString(),
       fullName: form.value.fullName,
       phone: form.value.phone,
+      division: form.value.division,
       district: form.value.district,
       thana: form.value.thana,
       address: form.value.address
@@ -263,16 +313,27 @@ function saveAddress() {
   closeForm();
 }
 
-function editAddress(addr) {
-  form.value = {
-    fullName: addr.fullName,
-    phone: addr.phone,
-    district: addr.district,
-    thana: addr.thana,
-    address: addr.address
-  };
-  editingId.value = addr.id;
+async function editAddress(addr) {
   isEditing.value = true;
+  editingId.value = addr.id;
+  
+  form.value.fullName = addr.fullName;
+  form.value.phone = addr.phone;
+  form.value.address = addr.address;
+  form.value.division = addr.division;
+
+  // Wait for the watcher to fetch districts
+  await new Promise(resolve => setTimeout(resolve, 300));
+  
+  // Now set district, which triggers thanas fetch
+  form.value.district = districts.value.find(d => d.id === addr.district?.id) || addr.district;
+  
+  // Wait for the watcher to fetch thanas
+  await new Promise(resolve => setTimeout(resolve, 300));
+  
+  // Now set thana
+  form.value.thana = filteredThanas.value.find(t => t.id === addr.thana?.id) || addr.thana;
+  
   isFormOpen.value = true;
 }
 

@@ -78,13 +78,15 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue';
-import reviewsData from '../data/reviews.json';
+import api from '../services/api';
 
-const reviewsList = ref(reviewsData);
+const reviewsList = ref([]);
 const active = ref(0);
 let timer = null;
+const isLoading = ref(true);
 
 const next = () => {
+  if (reviewsList.value.length === 0) return;
   active.value = (active.value + 1) % reviewsList.value.length;
 };
 
@@ -95,11 +97,59 @@ const goTo = (i) => {
 
 const resetTimer = () => {
   clearInterval(timer);
-  timer = setInterval(next, 6500);
+  if (reviewsList.value.length > 0) {
+    timer = setInterval(next, 6500);
+  }
+};
+
+const loadReviews = async () => {
+  try {
+    const res = await api.get('/v1/reviews?per_page=10');
+    if (res.data?.success) {
+      const dataArray = res.data.data.data || res.data.data;
+      reviewsList.value = dataArray.filter(r => r.status === 'approved' || r.status === true || r.status === 1).map(review => {
+        // Calculate date format or "time ago"
+        const dateObj = new Date(review.created_at);
+        const diffTime = Math.abs(new Date() - dateObj);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        let dateStr = dateObj.toLocaleDateString();
+        if (diffDays === 1) dateStr = 'Yesterday';
+        else if (diffDays < 7) dateStr = `${diffDays} days ago`;
+        else if (diffDays < 30) dateStr = `${Math.floor(diffDays/7)} weeks ago`;
+
+        return {
+          id: review.id,
+          name: review.user?.name || 'Anonymous',
+          text: review.comment,
+          rating: review.rating || 5,
+          date: dateStr,
+          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(review.user?.name || 'Anonymous')}&background=random`
+        };
+      });
+      // Fallback if no reviews
+      if (reviewsList.value.length === 0) {
+        reviewsList.value = [
+          {
+            id: 1,
+            name: 'No reviews yet',
+            text: 'Be the first to leave a review!',
+            rating: 5,
+            date: 'Today',
+            avatar: 'https://ui-avatars.com/api/?name=N+R&background=random'
+          }
+        ];
+      }
+    }
+  } catch (err) {
+    console.error('Failed to fetch reviews', err);
+  } finally {
+    isLoading.value = false;
+    resetTimer();
+  }
 };
 
 onMounted(() => {
-  timer = setInterval(next, 6500);
+  loadReviews();
 });
 
 onBeforeUnmount(() => {

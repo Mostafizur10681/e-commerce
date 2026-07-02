@@ -31,29 +31,26 @@
         >
           <!-- Two copies: first + duplicate -->
           <template v-for="pass in 2" :key="pass">
-            <div
+            <a
               v-for="partner in partners"
               :key="`${pass}-${partner.id}`"
-              class="partner-card group flex-shrink-0
-                     w-36 sm:w-44 h-24
-                     bg-gray-50 dark:bg-gray-800
-                     border border-gray-200 dark:border-gray-700
-                     rounded-2xl p-4
-                     flex items-center justify-center
-                     hover:border-primary dark:hover:border-primary
-                     hover:shadow-xl hover:scale-105
-                     transition-all duration-300
-                     cursor-default select-none"
+              :href="partner.website || 'javascript:void(0)'"
+              :target="partner.website ? '_blank' : '_self'"
+              :class="['partner-card group flex-shrink-0 w-36 sm:w-44 h-24 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-4 flex items-center justify-center hover:border-primary dark:hover:border-primary hover:shadow-xl hover:scale-105 transition-all duration-300 select-none', partner.website ? 'cursor-pointer' : 'cursor-default']"
+              @click="partner.website ? null : $event.preventDefault()"
             >
               <img
-                :src="partner.image"
+                v-if="partner.logo || partner.image"
+                :src="getImageUrl(partner.logo || partner.image)"
                 :alt="partner.name"
-                class="h-12 w-auto max-w-full object-contain mx-auto p-1
-                       transition-all duration-300"
+                class="h-12 w-auto max-w-full object-contain mx-auto p-1 transition-all duration-300"
                 loading="lazy"
                 @error="handleImgError($event, partner)"
               />
-            </div>
+              <span v-else class="text-sm font-bold text-gray-500 dark:text-gray-400 text-center leading-tight px-2">
+                {{ partner.name }}
+              </span>
+            </a>
           </template>
         </div>
       </div>
@@ -76,6 +73,7 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import partnersData from '../data/partners.json';
+import api from '../services/api';
 
 /* ── Data ── */
 const partners = ref(partnersData);
@@ -83,6 +81,16 @@ const paused   = ref(false);
 const activeDot = ref(0);
 
 let dotTimer = null;
+
+function getImageUrl(img) {
+  if (!img) return '';
+  if (img.startsWith('http') || img.startsWith('data:image/')) return img;
+  if (img.startsWith('/')) return img;
+  
+  // Use VITE_API_URL or fallback, removing '/api' to get base storage URL
+  const baseUrl = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/api\/?$/, '') : 'http://127.0.0.1:8000';
+  return `${baseUrl}/storage/${img}`;
+}
 
 /* ── Fallback when image fails to load ── */
 function handleImgError(event, partner) {
@@ -96,15 +104,29 @@ function handleImgError(event, partner) {
   card.appendChild(label);
 }
 
-/* ── Dot indicator timer (keeps in sync with marquee speed) ── */
-onMounted(() => {
+function startDotTimer() {
+  if (dotTimer) clearInterval(dotTimer);
+  if (partners.value.length === 0) return;
   dotTimer = setInterval(() => {
     activeDot.value = (activeDot.value + 1) % partners.value.length;
   }, Math.round(partners.value.length * 2800 / partners.value.length));
+}
+
+/* ── Fetch partners & start timer ── */
+onMounted(async () => {
+  try {
+    const response = await api.get('/v1/partners');
+    if (response.data && response.data.success && Array.isArray(response.data.data) && response.data.data.length > 0) {
+      partners.value = response.data.data;
+    }
+  } catch (error) {
+    console.error('Failed to fetch partners from API, using fallback:', error);
+  }
+  startDotTimer();
 });
 
 onBeforeUnmount(() => {
-  clearInterval(dotTimer);
+  if (dotTimer) clearInterval(dotTimer);
 });
 </script>
 
