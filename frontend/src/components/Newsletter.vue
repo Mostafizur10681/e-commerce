@@ -37,10 +37,13 @@
             </button>
           </form>
           
-          <!-- Success message -->
-          <transition name="fade">
+          <!-- Success and Error messages -->
+          <transition name="fade" mode="out-in">
             <p v-if="subscribed" class="text-white font-bold text-sm mt-3 inline-flex items-center gap-1.5 justify-center">
               <span>✅</span> Thank you for subscribing to our newsletter!
+            </p>
+            <p v-else-if="errorMsg" class="text-red-200 font-bold text-sm mt-3 inline-flex items-center gap-1.5 justify-center">
+              <span>❌</span> {{ errorMsg }}
             </p>
           </transition>
           
@@ -56,16 +59,37 @@
 
 <script setup>
 import { ref } from 'vue';
+import api from '../services/api';
+import { useAuthStore } from '../stores/authStore';
 
 const email = ref('');
 const subscribed = ref(false);
+const errorMsg = ref('');
+const authStore = useAuthStore();
 
-const handleSubscribe = () => {
-  subscribed.value = true;
-  email.value = '';
-  setTimeout(() => {
-    subscribed.value = false;
-  }, 5000);
+const handleSubscribe = async () => {
+  errorMsg.value = '';
+  subscribed.value = false;
+  
+  try {
+    const payload = {
+      email: email.value,
+      name: authStore.currentUser?.name || '',
+    };
+    
+    await api.post('/v1/subscriptions', payload);
+    subscribed.value = true;
+    email.value = '';
+    setTimeout(() => {
+      subscribed.value = false;
+    }, 5000);
+  } catch (err) {
+    if (err.response?.status === 422 && err.response.data?.errors?.email) {
+      errorMsg.value = err.response.data.errors.email[0];
+    } else {
+      errorMsg.value = err.response?.data?.message || 'Failed to subscribe. Please try again.';
+    }
+  }
 };
 </script>
 

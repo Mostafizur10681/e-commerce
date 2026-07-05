@@ -298,7 +298,6 @@ const navLinks = [
   { path: '/shop',       label: 'Shop'        },
   { path: '/about',      label: 'About'       },
   { path: '/contact',    label: 'Contact'     },
-  { path: '/faq',        label: 'FAQ'         },
   { path: '/track-order',label: 'Track Order' },
 ];
 
