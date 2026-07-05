@@ -16,7 +16,7 @@
         </div>
       </Transition>
 
-      <form @submit.prevent="handleUpdateProfile" class="space-y-5 max-w-xl">
+      <form @submit.prevent="handleUpdateProfile" class="w-full space-y-5">
         
         <!-- Profile Image Selection -->
         <div class="flex items-center gap-6 mb-6">
@@ -122,7 +122,7 @@
         </div>
       </Transition>
 
-      <form @submit.prevent="handleUpdatePassword" class="space-y-5 max-w-xl">
+      <form @submit.prevent="handleUpdatePassword" class="w-full space-y-5">
         <!-- Current Password -->
         <div>
           <label for="currentPassword" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">
