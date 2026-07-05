@@ -95,15 +95,7 @@ const searchTerm = ref('');
 const activeFaqId = ref(null);
 const selectedCategory = ref('');
 
-const categories = [
-  'Orders',
-  'Shipping',
-  'Returns & Refunds',
-  'Payments',
-  'Accounts',
-  'Products',
-  'General Questions',
-];
+const categories = computed(() => faqStore.activeCategories);
 
 onMounted(() => {
   faqStore.fetchFaqs();
@@ -136,30 +128,12 @@ const groupedFaqs = computed(() => {
     groups[cat].push(faq);
   });
 
-  const orderedCategories = [
-    'Orders',
-    'Shipping',
-    'Returns & Refunds',
-    'Payments',
-    'Accounts',
-    'Products',
-    'General Questions'
-  ];
+  const orderedCategories = categories.value;
 
   const groupedArray = [];
   
   orderedCategories.forEach(catName => {
     if (groups[catName] && groups[catName].length > 0) {
-      groupedArray.push({
-        category: catName,
-        faqs: groups[catName]
-      });
-    }
-  });
-
-  // Handle any other categories
-  Object.keys(groups).forEach(catName => {
-    if (!orderedCategories.includes(catName) && groups[catName].length > 0) {
       groupedArray.push({
         category: catName,
         faqs: groups[catName]

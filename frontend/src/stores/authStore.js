@@ -86,14 +86,35 @@ export const useAuthStore = defineStore('auth', {
 
     async updateProfile(updatedFields) {
       try {
-        const response = await api.put('/customer/profile', {
-          name: updatedFields.name,
-          phone: updatedFields.phone,
-          gender: updatedFields.gender || null,
-          date_of_birth: updatedFields.date_of_birth || null,
-          shipping_address: updatedFields.shipping_address || null,
-          billing_address: updatedFields.billing_address || null,
-        });
+        let response;
+        if (updatedFields.profile_pic) {
+          const formData = new FormData();
+          formData.append('name', updatedFields.name);
+          formData.append('email', updatedFields.email);
+          formData.append('phone', updatedFields.phone);
+          if (updatedFields.gender) formData.append('gender', updatedFields.gender);
+          if (updatedFields.date_of_birth) formData.append('date_of_birth', updatedFields.date_of_birth);
+          if (updatedFields.shipping_address) formData.append('shipping_address', updatedFields.shipping_address);
+          if (updatedFields.billing_address) formData.append('billing_address', updatedFields.billing_address);
+          formData.append('profile_pic', updatedFields.profile_pic);
+          formData.append('_method', 'PUT');
+
+          response = await api.post('/customer/profile', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          });
+        } else {
+          response = await api.put('/customer/profile', {
+            name: updatedFields.name,
+            email: updatedFields.email,
+            phone: updatedFields.phone,
+            gender: updatedFields.gender || null,
+            date_of_birth: updatedFields.date_of_birth || null,
+            shipping_address: updatedFields.shipping_address || null,
+            billing_address: updatedFields.billing_address || null,
+          });
+        }
 
         if (response.data && response.data.success) {
           const { user } = response.data.data;
@@ -106,10 +127,37 @@ export const useAuthStore = defineStore('auth', {
       } catch (error) {
         console.error('Update profile error:', error);
         let errorMsg = 'An error occurred while updating profile.';
+        let fieldErrors = null;
         if (error.response && error.response.data) {
           errorMsg = error.response.data.message || errorMsg;
+          fieldErrors = error.response.data.errors || null;
         }
-        return { success: false, error: errorMsg };
+        return { success: false, error: errorMsg, errors: fieldErrors };
+      }
+    },
+
+    async changePassword(currentPassword, newPassword) {
+      try {
+        const response = await api.post('/change-password', {
+          current_password: currentPassword,
+          password: newPassword,
+          password_confirmation: newPassword
+        });
+
+        if (response.data && response.data.success) {
+          return { success: true };
+        } else {
+          return { success: false, error: response.data.message || 'Failed to change password' };
+        }
+      } catch (error) {
+        console.error('Change password error:', error);
+        let errorMsg = 'An error occurred while changing password.';
+        let fieldErrors = null;
+        if (error.response && error.response.data) {
+          errorMsg = error.response.data.message || errorMsg;
+          fieldErrors = error.response.data.errors || null;
+        }
+        return { success: false, error: errorMsg, errors: fieldErrors };
       }
     },
 
