@@ -38,11 +38,11 @@
                 
                 <!-- CTA Button -->
                 <div class="pt-2">
-                  <RouterLink
-                    :to="slide.ctaLink || '/shop'"
+                    <RouterLink
+                    :to="slide.cta_link || '/shop'"
                     class="inline-flex items-center justify-center px-8 py-4 bg-primary text-white font-extrabold rounded-2xl hover:bg-primary-dark transition duration-300 shadow-xl hover:shadow-primary/20 hover:-translate-y-1 transform group"
                   >
-                    <span>{{ slide.ctaText || 'Shop Now' }}</span>
+                    <span>{{ slide.cta_text || 'Shop Now' }}</span>
                     <svg class="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                     </svg>
@@ -92,9 +92,9 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue';
-import slidesData from '../data/sliders.json';
+import api from '../services/api';
 
-const slides = ref(slidesData);
+const slides = ref([]);
 const active = ref(0);
 let timer = null;
 
@@ -111,17 +111,62 @@ const goTo = (i) => {
   resetTimer();
 };
 
-const resetTimer = () => {
-  clearInterval(timer);
+const startTimer = () => {
   timer = setInterval(next, 6500);
 };
 
-onMounted(() => {
-  timer = setInterval(next, 6500);
+const stopTimer = () => {
+  clearInterval(timer);
+};
+
+const resetTimer = () => {
+  stopTimer();
+  startTimer();
+};
+
+const fetchBanners = async () => {
+  try {
+    const res = await api.get('/v1/banners?menu=Main Slider&public=true');
+    if (res.data && res.data.data && res.data.data.length > 0) {
+      slides.value = res.data.data;
+    } else {
+      // Fallback if no banners are returned
+      slides.value = [
+        {
+          id: 1,
+          title: "Fresh Vegetables",
+          subtitle: "Organic & locally sourced",
+          image: "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=1920",
+          badge: "Fresh Choice",
+          cta_text: "Shop Now",
+          cta_link: "/shop"
+        }
+      ];
+    }
+  } catch (error) {
+    console.error("Failed to fetch banners", error);
+    // Fallback on error
+    slides.value = [
+      {
+        id: 1,
+        title: "Fresh Vegetables",
+        subtitle: "Organic & locally sourced",
+        image: "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=1920",
+        badge: "Fresh Choice",
+        cta_text: "Shop Now",
+        cta_link: "/shop"
+      }
+    ];
+  }
+};
+
+onMounted(async () => {
+  await fetchBanners();
+  startTimer();
 });
 
 onBeforeUnmount(() => {
-  clearInterval(timer);
+  stopTimer();
 });
 </script>
 

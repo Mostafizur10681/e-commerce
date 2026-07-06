@@ -354,36 +354,38 @@ const placeOrder = async () => {
     return;
   }
   isLoading.value = true;
-  // Simulate async operation (e.g., order processing)
-  await new Promise(resolve => setTimeout(resolve, 800));
-    // Create order object and store it
-    const order = {
-      orderId: generateOrderId(),
-      customerName: form.value.fullName,
-      phone: form.value.phone,
-      address: `${form.value.address}, ${form.value.thana}, ${form.value.district}`,
-      totalAmount: totalPrice.value,
-      createdAt: new Date().toISOString(),
-      status: 'Order Placed',
+  
+  try {
+    const payload = {
+      customer_name: form.value.fullName,
+      customer_phone: form.value.phone,
+      customer_email: form.value.email || null,
+      division: form.value.division?.division_name || '',
+      district: form.value.district?.district_name || '',
+      thana: form.value.thana?.thana_name || '',
+      address: form.value.address,
       items: cartItems.value.map(item => ({
-        id: item.product.id,
-        name: item.product.name,
-        price: item.product.price,
-        quantity: item.quantity,
-        image: item.product.image || item.product.images?.[0]
-      })),
-      email: form.value.email || '',
-      userId: authStore.currentUser?.id || null
+        product_id: item.product.id,
+        quantity: item.quantity
+      }))
     };
-    const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-    orders.push(order);
-    localStorage.setItem('orders', JSON.stringify(orders));
-    toast.show(`Your Order ID: ${order.orderId}`);
-    cartStore.clearCart();
-    // Reset form
-    form.value = { fullName: '', phone: '', address: '', division: null, district: null, thana: null, email: '' };
+
+    const res = await api.post('/v1/orders', payload);
+    
+    if (res.data && res.data.success) {
+      toast.show(`Order placed! ID: ${res.data.data.order_number}`);
+      cartStore.clearCart();
+      form.value = { fullName: '', phone: '', address: '', division: null, district: null, thana: null, email: '' };
+      router.push({ name: 'Home' });
+    } else {
+      toast.show(res.data?.message || 'Failed to place order', 'error');
+    }
+  } catch (err) {
+    console.error('Order error', err);
+    toast.show(err.response?.data?.message || 'Failed to place order', 'error');
+  } finally {
     isLoading.value = false;
-    router.push({ name: 'Home' });
+  }
 };
 
 const downloadPDF = async () => {
