@@ -17,7 +17,13 @@
         </div>
 
         <!-- Responsive grid -->
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
+        <div v-if="loading" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
+          <ProductCardSkeleton
+            v-for="i in 8"
+            :key="i"
+          />
+        </div>
+        <div v-else class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
           <ProductCard
             v-for="product in visibleProducts"
             :key="product.id"
@@ -75,6 +81,7 @@ import ReviewSlider from '../components/ReviewSlider.vue';
 import PartnersSlider from '../components/PartnersSlider.vue';
 import Newsletter from '../components/Newsletter.vue';
 import ProductCard from '../components/ProductCard.vue';
+import ProductCardSkeleton from '../components/ProductCardSkeleton.vue';
 import localProducts from '../data/products.json';
 import { useCartStore } from '../stores/cartStore';
 import { useToastStore } from '../stores/toastStore';
@@ -85,8 +92,10 @@ const toastStore = useToastStore();
 
 const productsList = ref([]);
 const visibleCount = ref(8);
+const loading = ref(true);
 
 onMounted(async () => {
+  loading.value = true;
   try {
     const response = await api.get('/v1/products?per_page=100');
     // Laravel API Controller index returns paginated structure under success trait
@@ -118,6 +127,8 @@ onMounted(async () => {
   } catch (error) {
     console.error('Failed to fetch products from API, using fallback:', error);
     productsList.value = localProducts;
+  } finally {
+    loading.value = false;
   }
 });
 

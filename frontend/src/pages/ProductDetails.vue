@@ -57,8 +57,11 @@
 
     <div class="max-w-7xl mx-auto p-4 md:p-8">
       
+      <!-- Loading State -->
+      <ProductDetailsSkeleton v-if="loading" />
+
       <!-- Not Found State -->
-      <div v-if="!product" class="flex flex-col items-center justify-center py-20 text-center">
+      <div v-else-if="!product" class="flex flex-col items-center justify-center py-20 text-center">
         <h1 class="text-4xl font-bold text-gray-800 dark:text-gray-100 mb-4">Product Not Found</h1>
         <p class="text-gray-550 mb-8">The product you're looking for doesn't exist or has been removed.</p>
         <router-link to="/shop" class="bg-primary hover:bg-primary-dark text-white py-3 px-6 rounded-lg shadow-md transition-all duration-200">
@@ -508,6 +511,7 @@
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import ProductCard from '../components/ProductCard.vue';
+import ProductDetailsSkeleton from '../components/ProductDetailsSkeleton.vue';
 import { useCartStore } from '../stores/cartStore';
 import { useProductStore } from '../stores/productStore';
 import { useReviewStore } from '../stores/reviewStore';
@@ -526,6 +530,7 @@ const authStore = useAuthStore();
 
 const product = ref(null);
 const reviews = ref([]);
+const loading = ref(true);
 
 const isAuthenticated = computed(() => authStore.currentUser !== null);
 
@@ -630,6 +635,7 @@ const relatedProducts = computed(() => {
 
 // Load single product data helper
 async function loadProduct(id) {
+  loading.value = true;
   try {
     const response = await api.get(`/v1/products/${id}`);
     if (response.data && response.data.success && response.data.data) {
@@ -659,9 +665,15 @@ async function loadProduct(id) {
   } catch (error) {
     console.error('Failed to load product from API, using fallback:', error);
     fallbackProduct(id);
+  } finally {
+    try {
+      await reviewStore.fetchReviews(id);
+      reviews.value = reviewStore.getReviews(id);
+    } catch (err) {
+      console.error('Failed to fetch reviews:', err);
+    }
+    loading.value = false;
   }
-  await reviewStore.fetchReviews(id);
-  reviews.value = reviewStore.getReviews(id);
   quantity.value = 1;
   activeTab.value = 'description';
   resetAttributes();

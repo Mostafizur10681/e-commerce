@@ -119,29 +119,40 @@
                 </button>
               </div>
               <div v-show="!categoryCollapsed" class="space-y-1">
-                <label
-                  v-for="cat in categoryOptions"
-                  :key="cat.name"
-                  class="filter-checkbox-label"
-                >
-                  <div class="flex items-center gap-2.5">
-                    <div class="relative flex items-center">
-                      <input
-                        type="checkbox"
-                        :value="cat.name"
-                        v-model="selectedCategories"
-                        class="peer sr-only"
-                      />
-                      <div class="checkbox-box">
-                        <svg class="w-2.5 h-2.5 text-white opacity-0 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
-                        </svg>
-                      </div>
+                <template v-if="loading">
+                  <div v-for="i in 5" :key="i" class="flex items-center justify-between py-2 px-2.5 animate-pulse">
+                    <div class="flex items-center gap-2.5">
+                      <div class="w-[18px] h-[18px] rounded-md bg-gray-200 dark:bg-gray-800"></div>
+                      <div class="h-4 w-20 bg-gray-200 dark:bg-gray-850 rounded"></div>
                     </div>
-                    <span class="text-sm text-gray-600 dark:text-gray-300 group-hover:text-primary dark:group-hover:text-primary-light transition font-medium">{{ cat.name }}</span>
+                    <div class="h-4 w-6 bg-gray-100 dark:bg-gray-850/80 rounded-full"></div>
                   </div>
-                  <span class="filter-count-badge">{{ cat.count }}</span>
-                </label>
+                </template>
+                <template v-else>
+                  <label
+                    v-for="cat in categoryOptions"
+                    :key="cat.name"
+                    class="filter-checkbox-label"
+                  >
+                    <div class="flex items-center gap-2.5">
+                      <div class="relative flex items-center">
+                        <input
+                          type="checkbox"
+                          :value="cat.name"
+                          v-model="selectedCategories"
+                          class="peer sr-only"
+                        />
+                        <div class="checkbox-box">
+                          <svg class="w-2.5 h-2.5 text-white opacity-0 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                          </svg>
+                        </div>
+                      </div>
+                      <span class="text-sm text-gray-600 dark:text-gray-300 group-hover:text-primary dark:group-hover:text-primary-light transition font-medium">{{ cat.name }}</span>
+                    </div>
+                    <span class="filter-count-badge">{{ cat.count }}</span>
+                  </label>
+                </template>
               </div>
             </div>
 
@@ -263,7 +274,13 @@
           </div>
 
           <!-- Product grid -->
-          <div class="grid grid-cols-3 gap-4 md:gap-5">
+          <div v-if="loading" class="grid grid-cols-3 gap-4 md:gap-5">
+            <ProductCardSkeleton
+              v-for="i in itemsPerPage"
+              :key="i"
+            />
+          </div>
+          <div v-else-if="filteredProducts.length > 0" class="grid grid-cols-3 gap-4 md:gap-5">
             <ProductCard
               v-for="product in paginatedProducts"
               :key="product.id"
@@ -274,7 +291,7 @@
           </div>
 
           <!-- Empty state -->
-          <div v-if="filteredProducts.length === 0" class="text-center py-20">
+          <div v-else class="text-center py-20">
             <div class="w-20 h-20 mx-auto mb-5 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center ring-4 ring-gray-50 dark:ring-gray-900">
               <svg class="w-10 h-10 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
@@ -299,6 +316,7 @@
 import { ref, reactive, computed, watch, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import ProductCard from '../components/ProductCard.vue';
+import ProductCardSkeleton from '../components/ProductCardSkeleton.vue';
 import localProducts from '../data/products.json';
 import localCategories from '../data/categories.json';
 import { useCartStore } from '../stores/cartStore';
@@ -321,6 +339,7 @@ const showMobileFilters  = ref(false);
 // Dynamic data lists
 const productsList       = ref([]);
 const categoriesList     = ref([]);
+const loading            = ref(true);
 
 // Pagination state
 const itemsPerPage = ref(12);
@@ -387,6 +406,8 @@ onMounted(async () => {
   } catch (error) {
     console.error('Failed to fetch products from API, using fallback:', error);
     productsList.value = localProducts;
+  } finally {
+    loading.value = false;
   }
 });
 

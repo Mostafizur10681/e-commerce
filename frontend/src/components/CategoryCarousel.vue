@@ -2,7 +2,15 @@
   <section class="py-12 px-4" data-aos="fade-up">
     <div class="max-w-7xl mx-auto">
       <h2 id="categorytitle" class="section-title">Shop by Category</h2>
-      <div class="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide">
+      <!-- Loading Skeleton Carousel -->
+      <div v-if="loading" class="flex gap-4 overflow-x-auto pb-4 scrollbar-hide animate-pulse">
+        <div v-for="i in 6" :key="i" class="flex-shrink-0">
+          <div class="w-28 h-28 sm:w-36 sm:h-36 rounded-2xl bg-gray-250/90 dark:bg-gray-800"></div>
+          <div class="h-3 w-16 mx-auto mt-3 bg-gray-200 dark:bg-gray-800 rounded"></div>
+        </div>
+      </div>
+      <!-- Loaded Category Carousel -->
+      <div v-else class="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide">
         <div v-for="cat in categories" :key="cat.id"
           class="flex-shrink-0 snap-center group cursor-pointer"
           data-aos="zoom-in" :data-aos-delay="cat.id * 100"
@@ -25,8 +33,10 @@ import localCategories from '../data/categories.json';
 
 const router = useRouter();
 const categories = ref([]);
+const loading = ref(true);
 
 onMounted(async () => {
+  loading.value = true;
   try {
     const response = await api.get('/v1/categories?all=true');
     if (response.data && response.data.success && Array.isArray(response.data.data)) {
@@ -37,6 +47,8 @@ onMounted(async () => {
   } catch (error) {
     console.error('Failed to fetch categories from API, using fallback:', error);
     categories.value = localCategories;
+  } finally {
+    loading.value = false;
   }
 });
 

@@ -1,7 +1,15 @@
 <template>
   <section class="relative overflow-hidden bg-gray-100 dark:bg-gray-950 transition-colors duration-300" data-aos="fade-up">
     <!-- Main Slider Track -->
-    <div class="relative h-96 sm:h-[480px] md:h-[580px] w-full">
+    <div v-if="loading" class="relative h-96 sm:h-[480px] md:h-[580px] w-full animate-pulse bg-gray-100 dark:bg-gray-900/60 flex items-center">
+      <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 w-full space-y-6">
+        <div class="h-8 w-36 bg-gray-200/90 dark:bg-gray-800 rounded-full"></div>
+        <div class="h-14 w-96 bg-gray-200/90 dark:bg-gray-800 rounded-md max-w-[80%]"></div>
+        <div class="h-6 w-80 bg-gray-200/90 dark:bg-gray-800 rounded-md max-w-[60%]"></div>
+        <div class="h-14 w-40 bg-gray-200/90 dark:bg-gray-800 rounded-2xl"></div>
+      </div>
+    </div>
+    <div v-else class="relative h-96 sm:h-[480px] md:h-[580px] w-full">
       <transition-group name="fade-slide">
         <div
           v-for="(slide, i) in slides"
@@ -97,6 +105,7 @@ import api from '../services/api';
 const slides = ref([]);
 const active = ref(0);
 let timer = null;
+const loading = ref(true);
 
 const next = () => {
   active.value = (active.value + 1) % slides.value.length;
@@ -125,6 +134,7 @@ const resetTimer = () => {
 };
 
 const fetchBanners = async () => {
+  loading.value = true;
   try {
     const res = await api.get('/v1/banners?menu=Main Slider&public=true');
     if (res.data && res.data.data && res.data.data.length > 0) {
@@ -157,6 +167,8 @@ const fetchBanners = async () => {
         cta_link: "/shop"
       }
     ];
+  } finally {
+    loading.value = false;
   }
 };
 

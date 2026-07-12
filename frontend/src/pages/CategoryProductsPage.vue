@@ -2,7 +2,13 @@
   <section class="py-14 px-4" data-aos="fade-up">
     <div class="max-w-7xl mx-auto">
       <h2 class="section-title text-center mb-8">{{ categoryTitle }}</h2>
-      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+      <div v-if="loading" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+        <ProductCardSkeleton
+          v-for="i in 8"
+          :key="i"
+        />
+      </div>
+      <div v-else-if="filteredProducts.length > 0" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
         <ProductCard
           v-for="product in filteredProducts"
           :key="product.id"
@@ -10,7 +16,7 @@
           @addToCart="handleAdd"
         />
       </div>
-      <p v-if="filteredProducts.length === 0" class="text-center text-gray-500 py-10" id="emptycat">
+      <p v-else class="text-center text-gray-500 py-10" id="emptycat">
         No items found in this category
       </p>
     </div>
@@ -21,6 +27,7 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import ProductCard from '../components/ProductCard.vue';
+import ProductCardSkeleton from '../components/ProductCardSkeleton.vue';
 import localProducts from '../data/products.json';
 import { useCartStore } from '@/stores/cartStore';
 import { useToastStore } from '@/stores/toastStore';

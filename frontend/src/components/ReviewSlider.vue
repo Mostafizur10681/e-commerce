@@ -9,7 +9,28 @@
 
       <!-- Testimonial Slider Frame -->
       <div class="relative overflow-hidden">
-        <div
+        <div v-if="isLoading" class="animate-pulse px-4 max-w-2xl mx-auto">
+          <!-- Skeleton Card -->
+          <div class="bg-white dark:bg-gray-905/30 rounded-3xl p-8 md:p-10 border border-gray-150 dark:border-gray-800 shadow-md text-center space-y-6">
+            <!-- Avatar -->
+            <div class="w-18 h-18 rounded-full mx-auto bg-gray-200 dark:bg-gray-800"></div>
+            <!-- Stars -->
+            <div class="flex justify-center gap-1">
+              <div v-for="n in 5" :key="n" class="w-5 h-5 rounded-full bg-gray-250 dark:bg-gray-800"></div>
+            </div>
+            <!-- Text lines -->
+            <div class="space-y-2">
+              <div class="h-4 bg-gray-200 dark:bg-gray-800 rounded w-5/6 mx-auto"></div>
+              <div class="h-4 bg-gray-200 dark:bg-gray-800 rounded w-4/6 mx-auto"></div>
+            </div>
+            <!-- Name & Date -->
+            <div class="space-y-2 pt-2">
+              <div class="h-4 bg-gray-200 dark:bg-gray-800 rounded w-24 mx-auto"></div>
+              <div class="h-3 bg-gray-200 dark:bg-gray-800 rounded w-16 mx-auto"></div>
+            </div>
+          </div>
+        </div>
+        <div v-else
           class="flex transition-transform duration-500 ease-in-out"
           :style="{ transform: `translateX(-${active * 100}%)` }"
         >
