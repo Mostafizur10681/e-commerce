@@ -16,12 +16,12 @@
 
         <!-- ==============================
              LEFT: Hero Image + Info Card
-             ============================== -->
+             ============================= -->
         <div class="flex flex-col gap-6">
           <!-- Hero image card -->
           <div class="relative rounded-2xl overflow-hidden shadow-xl group h-72 sm:h-80 lg:h-96 cursor-default">
             <img
-              src="@/assets/contact-hero.png"
+              :src="settings.support_image || contactHero"
               alt="Customer Support"
               class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             />
@@ -30,12 +30,12 @@
 
             <!-- Overlay text -->
             <div class="absolute bottom-0 left-0 right-0 p-6 text-white">
-              <h2 class="text-2xl font-bold leading-tight mb-1">Need Help?</h2>
+              <h2 class="text-2xl font-bold leading-tight mb-1">{{ settings.support_title }}</h2>
               <p class="text-sm text-gray-200 leading-relaxed">
-                Our support team is always ready to assist you.
+                {{ settings.support_desc }}
               </p>
               <a
-                href="tel:+8801700000000"
+                :href="'tel:' + settings.support_phone"
                 class="mt-4 inline-flex items-center gap-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/30 text-white text-sm font-medium px-4 py-2 rounded-xl transition-all duration-300 hover:scale-105"
               >
                 <!-- Phone icon -->
@@ -62,7 +62,7 @@
                 </span>
                 <div>
                   <p class="font-medium text-gray-900 dark:text-white">Phone</p>
-                  <p class="text-gray-500 dark:text-gray-400">+880 1700-000000</p>
+                  <p class="text-gray-500 dark:text-gray-400">{{ settings.phone }}</p>
                 </div>
               </li>
               <!-- Email -->
@@ -75,7 +75,7 @@
                 </span>
                 <div>
                   <p class="font-medium text-gray-900 dark:text-white">Email</p>
-                  <p class="text-gray-500 dark:text-gray-400">support@freshmart.com</p>
+                  <p class="text-gray-500 dark:text-gray-400">{{ settings.email }}</p>
                 </div>
               </li>
               <!-- Address -->
@@ -90,7 +90,7 @@
                 </span>
                 <div>
                   <p class="font-medium text-gray-900 dark:text-white">Address</p>
-                  <p class="text-gray-500 dark:text-gray-400">42 Green Lane, Dhaka 1212, Bangladesh</p>
+                  <p class="text-gray-500 dark:text-gray-400">{{ settings.address }}</p>
                 </div>
               </li>
               <!-- Business Hours -->
@@ -103,8 +103,8 @@
                 </span>
                 <div>
                   <p class="font-medium text-gray-900 dark:text-white">Business Hours</p>
-                  <p class="text-gray-500 dark:text-gray-400">Mon – Sat: 9:00 AM – 8:00 PM</p>
-                  <p class="text-gray-500 dark:text-gray-400">Sunday: 11:00 AM – 5:00 PM</p>
+                  <p class="text-gray-500 dark:text-gray-400">{{ settings.business_hours_weekday }}</p>
+                  <p class="text-gray-500 dark:text-gray-400">{{ settings.business_hours_weekend }}</p>
                 </div>
               </li>
             </ul>
@@ -130,7 +130,7 @@
                 type="text"
                 placeholder="John Doe"
                 required
-                class="w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 hover:border-gray-400 dark:hover:border-gray-500"
+                class="w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-55 dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 hover:border-gray-400 dark:hover:border-gray-500"
               />
               <p v-if="errors.fullName" class="mt-1.5 text-xs text-red-500 flex items-center gap-1">
                 <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
@@ -149,7 +149,7 @@
                 type="email"
                 placeholder="you@example.com"
                 required
-                class="w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 hover:border-gray-400 dark:hover:border-gray-500"
+                class="w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-55 dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 hover:border-gray-400 dark:hover:border-gray-500"
               />
               <p v-if="errors.email" class="mt-1.5 text-xs text-red-500 flex items-center gap-1">
                 <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
@@ -157,7 +157,7 @@
               </p>
             </div>
 
-            <!-- Phone -->
+            <!-- Phone Number -->
             <div>
               <label for="phone" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                 Phone Number <span class="text-red-500">*</span>
@@ -165,10 +165,10 @@
               <input
                 v-model="form.phone"
                 id="phone"
-                type="tel"
+                type="text"
                 placeholder="+880 1700-000000"
                 required
-                class="w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 hover:border-gray-400 dark:hover:border-gray-500"
+                class="w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-55 dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 hover:border-gray-400 dark:hover:border-gray-500"
               />
               <p v-if="errors.phone" class="mt-1.5 text-xs text-red-500 flex items-center gap-1">
                 <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
@@ -187,7 +187,7 @@
                 type="text"
                 placeholder="How can we help you?"
                 required
-                class="w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 hover:border-gray-400 dark:hover:border-gray-500"
+                class="w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-55 dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 hover:border-gray-400 dark:hover:border-gray-500"
               />
               <p v-if="errors.subject" class="mt-1.5 text-xs text-red-500 flex items-center gap-1">
                 <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
@@ -206,7 +206,7 @@
                 rows="5"
                 required
                 placeholder="Describe your question or issue in detail…"
-                class="w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 hover:border-gray-400 dark:hover:border-gray-500 resize-none"
+                class="w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-55 dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 hover:border-gray-400 dark:hover:border-gray-500 resize-none"
               />
               <p v-if="errors.message" class="mt-1.5 text-xs text-red-500 flex items-center gap-1">
                 <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
@@ -238,39 +238,29 @@
           </form>
         </div>
       </div>
-
-      <!-- Recent Messages Section -->
-      <section v-if="recentMessages.length" class="mt-12">
-        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-5">Recent Messages</h2>
-        <ul class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          <li
-            v-for="msg in recentMessages"
-            :key="msg.createdAt"
-            class="bg-white dark:bg-gray-900 rounded-xl p-5 shadow border border-gray-200 dark:border-gray-700 hover:shadow-md transition-all duration-300"
-          >
-            <div class="flex items-center gap-2 mb-2">
-              <span class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold uppercase">
-                {{ msg.name?.charAt(0) || '?' }}
-              </span>
-              <div>
-                <p class="text-sm font-semibold text-gray-900 dark:text-white leading-tight">{{ msg.name }}</p>
-                <p class="text-xs text-gray-400">{{ msg.subject }}</p>
-              </div>
-            </div>
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ new Date(msg.createdAt).toLocaleString() }}</p>
-          </li>
-        </ul>
-      </section>
-
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useToastStore } from '@/stores/toastStore';
+import api from '@/services/api';
+import contactHero from '@/assets/contact-hero.png';
 
 const toast = useToastStore();
+
+const settings = ref({
+  phone: '+880 1700-000000',
+  email: 'support@freshmart.com',
+  address: '42 Green Lane, Dhaka 1212, Bangladesh',
+  business_hours_weekday: 'Mon – Sat: 9:00 AM – 8:00 PM',
+  business_hours_weekend: 'Sunday: 11:00 AM – 5:00 PM',
+  support_title: 'Need Help?',
+  support_desc: 'Our support team is always ready to assist you.',
+  support_phone: '+8801700000000',
+  support_image: ''
+});
 
 const form = ref({
   fullName: '',
@@ -282,7 +272,6 @@ const form = ref({
 
 const errors = ref({});
 const isSubmitting = ref(false);
-const recentMessages = ref([]);
 
 const validate = () => {
   const newErrors = {};
@@ -301,19 +290,20 @@ const validate = () => {
   return Object.keys(newErrors).length === 0;
 };
 
-const loadRecent = () => {
-  const stored = localStorage.getItem('contactMessages');
-  if (stored) {
-    try {
-      const arr = JSON.parse(stored);
-      recentMessages.value = arr.slice(-5).reverse();
-    } catch (e) {
-      console.error('Failed to parse contactMessages', e);
+const fetchSettings = async () => {
+  try {
+    const res = await api.get('/v1/contact-settings');
+    if (res.data && res.data.success && res.data.data) {
+      settings.value = res.data.data;
     }
+  } catch (err) {
+    console.error('Failed to load contact settings:', err);
   }
 };
 
-loadRecent();
+onMounted(() => {
+  fetchSettings();
+});
 
 const sendMessage = async () => {
   if (!validate()) return;
@@ -325,22 +315,26 @@ const sendMessage = async () => {
     phone: form.value.phone,
     subject: form.value.subject,
     message: form.value.message,
-    createdAt: new Date().toISOString()
   };
 
-  const existing = JSON.parse(localStorage.getItem('contactMessages') || '[]');
-  existing.push(message);
-  localStorage.setItem('contactMessages', JSON.stringify(existing));
-
-  toast.show('Message sent successfully');
-
-  form.value = { fullName: '', email: '', phone: '', subject: '', message: '' };
-  errors.value = {};
-  loadRecent();
-  isSubmitting.value = false;
+  try {
+    const res = await api.post('/v1/messages', message);
+    if (res.data && res.data.success) {
+      toast.show('Message sent successfully');
+      form.value = { fullName: '', email: '', phone: '', subject: '', message: '' };
+      errors.value = {};
+    } else {
+      toast.show('Failed to submit message. Please try again.');
+    }
+  } catch (err) {
+    console.error('Contact message submit error:', err);
+    toast.show('Failed to send message. Please check your network connection.');
+  } finally {
+    isSubmitting.value = false;
+  }
 };
 </script>
 
 <style scoped>
-/* Remove the old glassmorphism override that broke dark mode */
+/* Styles */
 </style>
