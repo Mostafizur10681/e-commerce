@@ -11,11 +11,11 @@
 
       <div class="relative max-w-4xl mx-auto text-center">
         <span class="inline-block px-4 py-1.5 text-xs font-semibold tracking-widest uppercase text-primary bg-primary/10 rounded-full mb-5">
-          Who We Are
+          {{ aboutData?.hero_badge || 'Who We Are' }}
         </span>
-        <h1 class="section-title">About Us</h1>
+        <h1 class="section-title">{{ aboutData?.hero_title || 'About Us' }}</h1>
         <p class="mt-5 text-base sm:text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">
-          We are committed to providing the best online shopping experience with quality products and fast delivery — right to your doorstep.
+          {{ aboutData?.hero_subtitle || 'We are committed to providing the best online shopping experience with quality products and fast delivery — right to your doorstep.' }}
         </p>
         <div class="mt-8 flex flex-wrap gap-4 justify-center">
           <router-link to="/shop"
@@ -42,7 +42,7 @@
           <!-- Image -->
           <div class="relative group rounded-2xl overflow-hidden shadow-xl order-2 lg:order-1">
             <img
-              src="@/assets/about-story.png"
+              :src="aboutData?.story_image || aboutStoryFallback"
               alt="Our Story"
               class="w-full h-72 sm:h-80 lg:h-96 object-cover transition-transform duration-500 group-hover:scale-105"
             />
@@ -56,22 +56,22 @@
               </div>
               <div>
                 <p class="text-xs text-gray-500 dark:text-gray-400">Since</p>
-                <p class="text-sm font-bold text-gray-900 dark:text-white">2023</p>
+                <p class="text-sm font-bold text-gray-900 dark:text-white">{{ aboutData?.story_since || '2023' }}</p>
               </div>
             </div>
           </div>
 
           <!-- Text -->
           <div class="order-1 lg:order-2">
-            <span class="inline-block px-3 py-1 text-xs font-semibold tracking-widest uppercase text-primary bg-primary/10 rounded-full mb-4">Our Story</span>
+            <span class="inline-block px-3 py-1 text-xs font-semibold tracking-widest uppercase text-primary bg-primary/10 rounded-full mb-4">{{ aboutData?.story_badge || 'Our Story' }}</span>
             <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white leading-tight mb-5">
-              From a Small Idea to<br class="hidden sm:block" /> a Trusted Platform
+              {{ aboutData?.story_title || 'From a Small Idea to a Trusted Platform' }}
             </h2>
             <p class="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
-              FreshMart started with a simple idea: everyone deserves access to fresh, healthy, and high-quality food without the hassle of navigating crowded supermarkets. What began as a small local delivery service has grown into a trusted online grocery destination serving thousands of happy customers.
+              {{ aboutData?.story_description_1 || 'FreshMart started with a simple idea: everyone deserves access to fresh, healthy, and high-quality food without the hassle of navigating crowded supermarkets. What began as a small local delivery service has grown into a trusted online grocery destination serving thousands of happy customers.' }}
             </p>
             <p class="text-gray-600 dark:text-gray-400 leading-relaxed mb-6">
-              We partner directly with local farmers and trusted suppliers to bring you the best seasonal produce, dairy, bakery items, and pantry staples. Our commitment is to quality, sustainability, and exceptional customer service.
+              {{ aboutData?.story_description_2 || 'We partner directly with local farmers and trusted suppliers to bring you the best seasonal produce, dairy, bakery items, and pantry staples. Our commitment is to quality, sustainability, and exceptional customer service.' }}
             </p>
             <ul class="space-y-2.5">
               <li v-for="item in storyPoints" :key="item" class="flex items-center gap-2.5 text-sm text-gray-700 dark:text-gray-300">
@@ -103,9 +103,9 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
               </svg>
             </div>
-            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">Our Mission</h3>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">{{ aboutData?.mission_title || 'Our Mission' }}</h3>
             <p class="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
-              To deliver high-quality products at affordable prices with excellent customer service, making online grocery shopping simple, reliable, and enjoyable for every household.
+              {{ aboutData?.mission_description || 'To deliver high-quality products at affordable prices with excellent customer service, making online grocery shopping simple, reliable, and enjoyable for every household.' }}
             </p>
           </div>
           <!-- Vision -->
@@ -116,9 +116,9 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
               </svg>
             </div>
-            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">Our Vision</h3>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">{{ aboutData?.vision_title || 'Our Vision' }}</h3>
             <p class="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
-              To become one of the most trusted online shopping platforms in Bangladesh, empowering local farmers and delivering happiness to every home through technology and innovation.
+              {{ aboutData?.vision_description || 'To become one of the most trusted online shopping platforms in Bangladesh, empowering local farmers and delivering happiness to every home through technology and innovation.' }}
             </p>
           </div>
         </div>
@@ -131,9 +131,9 @@
     <section class="py-16 px-4">
       <div class="max-w-7xl mx-auto">
         <div class="text-center mb-12">
-          <span class="inline-block px-3 py-1 text-xs font-semibold tracking-widest uppercase text-primary bg-primary/10 rounded-full mb-4">Our Advantages</span>
-          <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white">Why Choose FreshMart?</h2>
-          <p class="mt-3 text-gray-500 dark:text-gray-400 max-w-xl mx-auto text-sm">We go the extra mile so you get the very best, every single time.</p>
+          <span class="inline-block px-3 py-1 text-xs font-semibold tracking-widest uppercase text-primary bg-primary/10 rounded-full mb-4">{{ aboutData?.why_choose_badge || 'Our Advantages' }}</span>
+          <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white">{{ aboutData?.why_choose_title || 'Why Choose FreshMart?' }}</h2>
+          <p class="mt-3 text-gray-500 dark:text-gray-400 max-w-xl mx-auto text-sm">{{ aboutData?.why_choose_subtitle || 'We go the extra mile so you get the very best, every single time.' }}</p>
         </div>
         <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <div
@@ -172,9 +172,9 @@
     <section class="py-16 px-4 bg-white dark:bg-gray-900 transition-colors duration-300">
       <div class="max-w-7xl mx-auto">
         <div class="text-center mb-12">
-          <span class="inline-block px-3 py-1 text-xs font-semibold tracking-widest uppercase text-primary bg-primary/10 rounded-full mb-4">The Team</span>
-          <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white">Meet Our Team</h2>
-          <p class="mt-3 text-gray-500 dark:text-gray-400 max-w-xl mx-auto text-sm">Passionate people working every day to bring freshness to your door.</p>
+          <span class="inline-block px-3 py-1 text-xs font-semibold tracking-widest uppercase text-primary bg-primary/10 rounded-full mb-4">{{ aboutData?.team_badge || 'The Team' }}</span>
+          <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white">{{ aboutData?.team_title || 'Meet Our Team' }}</h2>
+          <p class="mt-3 text-gray-500 dark:text-gray-400 max-w-xl mx-auto text-sm">{{ aboutData?.team_subtitle || 'Passionate people working every day to bring freshness to your door.' }}</p>
         </div>
         <div class="grid sm:grid-cols-3 gap-8 max-w-4xl mx-auto">
           <div
@@ -219,18 +219,25 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue';
+import api from '@/services/api';
 import teamCeoImg from '@/assets/team-ceo.png';
 import teamFounderImg from '@/assets/team-founder.png';
 import teamSupportImg from '@/assets/team-support.png';
+import aboutStoryFallback from '@/assets/about-story.png';
 
-const storyPoints = [
+const aboutData = ref(null);
+const loading = ref(true);
+const error = ref(null);
+
+const storyPoints = ref([
   'Partnered with 200+ local farmers & suppliers',
   'Delivering to 50+ cities across Bangladesh',
   'Over 10,000 happy customers and counting',
   'Same-day and next-day delivery available',
-];
+]);
 
-const features = [
+const features = ref([
   {
     icon: '🚚',
     title: 'Fast Delivery',
@@ -255,16 +262,16 @@ const features = [
     desc: 'Our friendly support team is always ready to help you anytime.',
     bgClass: 'bg-rose-50 dark:bg-rose-900/30',
   },
-];
+]);
 
-const stats = [
+const stats = ref([
   { value: '12K+', label: 'Happy Customers' },
   { value: '50K+', label: 'Products Sold' },
   { value: '98%', label: 'Satisfaction Rate' },
-  { value: '200+', label: 'Local Suppliers' },
-];
+  { value: '200%', label: 'Local Suppliers' },
+]);
 
-const team = [
+const team = ref([
   {
     name: 'Rafiul Islam',
     role: 'CEO & Founder',
@@ -283,7 +290,43 @@ const team = [
     bio: 'Dedicated to making every customer interaction seamless and satisfying.',
     image: teamSupportImg,
   },
-];
+]);
+
+onMounted(async () => {
+  try {
+    const res = await api.get('/v1/about');
+    if (res.data && res.data.success && res.data.data) {
+      const data = res.data.data;
+      aboutData.value = data;
+      
+      if (data.story_points && data.story_points.length > 0) {
+        storyPoints.value = data.story_points;
+      }
+      if (data.features && data.features.length > 0) {
+        features.value = data.features;
+      }
+      if (data.stats && data.stats.length > 0) {
+        stats.value = data.stats;
+      }
+      if (data.team && data.team.length > 0) {
+        team.value = data.team.map((member, idx) => {
+          let img = member.image;
+          if (!img) {
+            if (idx === 0) img = teamCeoImg;
+            else if (idx === 1) img = teamFounderImg;
+            else img = teamSupportImg;
+          }
+          return { ...member, image: img };
+        });
+      }
+    }
+  } catch (err) {
+    console.error('Failed to load dynamic about details:', err);
+    error.value = 'Failed to load custom page updates';
+  } finally {
+    loading.value = false;
+  }
+});
 </script>
 
 <style scoped>
