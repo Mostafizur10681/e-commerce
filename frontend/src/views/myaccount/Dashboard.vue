@@ -114,6 +114,7 @@
 import { reactive, onMounted } from 'vue';
 import { useAuthStore } from '../../stores/authStore';
 import { useWishlistStore } from '../../stores/wishlistStore';
+import api from '../../services/api';
 
 const authStore = useAuthStore();
 const wishlistStore = useWishlistStore();
@@ -126,25 +127,27 @@ const stats = reactive({
 
 const activities = reactive([]);
 
-onMounted(() => {
+onMounted(async () => {
   const userId = authStore.currentUser?.id;
-  const userPhone = authStore.currentUser?.phone;
-  const userEmail = authStore.currentUser?.email;
 
   // 1. Calculate orders count
   let rawOrders = [];
   try {
-    rawOrders = JSON.parse(localStorage.getItem('orders') || '[]');
+    const res = await api.get('/v1/auth/orders');
+    if (res.data && res.data.success) {
+      rawOrders = res.data.data.data || res.data.data || [];
+    }
   } catch (e) {
-    console.error('Failed to parse orders', e);
+    console.error('Failed to parse orders from API', e);
   }
 
-  // Filter orders related to this user
-  const userOrders = rawOrders.filter(o => 
-    o.userId === userId || 
-    (userPhone && o.phone === userPhone) || 
-    (userEmail && o.email === userEmail)
-  );
+  // Map to matching format
+  const userOrders = rawOrders.map(o => ({
+    orderId: o.order_number || String(o.id),
+    createdAt: o.created_at,
+    totalAmount: Number(o.total || 0),
+    status: o.status || 'pending'
+  }));
   stats.totalOrders = userOrders.length;
 
   // 2. Load Wishlist

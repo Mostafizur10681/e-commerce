@@ -88,8 +88,12 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
+import { useAuthStore } from '../stores/authStore';
+import api from '../services/api';
 
 const route = useRoute();
+const authStore = useAuthStore();
+
 const stages = ['Order Placed', 'Processing', 'Packed', 'Shipped', 'Out For Delivery', 'Delivered'];
 const searchId = ref('');
 const errorMessage = ref('');
@@ -110,27 +114,89 @@ function loadOrders() {
   }
 }
 
-function track() {
+async function track() {
   errorMessage.value = '';
+  foundOrder.value = null;
+
+  const trimmedId = searchId.value.trim();
+  if (!trimmedId) {
+    errorMessage.value = 'Please enter an Order ID';
+    return;
+  }
+
+  // 1. Try to fetch from the API if authenticated
+  if (authStore.currentUser) {
+    try {
+      const res = await api.get(`/v1/auth/orders/${trimmedId}`);
+      if (res.data && res.data.success) {
+        const o = res.data.data;
+        const formattedOrder = {
+          orderId: o.order_number || String(o.id),
+          createdAt: o.created_at,
+          totalAmount: Number(o.total || 0),
+          status: o.status || 'pending',
+          paymentStatus: o.payment_status || 'pending',
+          customerName: o.customer_name || '',
+          phone: o.customer_phone || '',
+          email: o.customer_email || '',
+          address: [o.address, o.thana, o.district, o.division].filter(Boolean).join(', '),
+          items: (o.items || []).map(item => ({
+            id: item.id,
+            name: item.product?.name || 'Unknown Product',
+            image: item.product?.image || '',
+            price: Number(item.price || 0),
+            quantity: item.quantity || 1
+          }))
+        };
+        
+        setupTrackingStages(formattedOrder);
+        foundOrder.value = formattedOrder;
+        return;
+      }
+    } catch (e) {
+      console.error('Failed to track order via API, trying local storage...', e);
+    }
+  }
+
+  // 2. Fallback to localStorage if guest or API failed
   const orders = loadOrders();
-  const order = orders.find(o => o.orderId === searchId.value.trim());
+  const order = orders.find(o => o.orderId === trimmedId);
   if (!order) {
     errorMessage.value = 'Order not found';
     foundOrder.value = null;
     return;
   }
-  // Compute current stage based on days elapsed since creation
+  setupTrackingStages(order);
+  foundOrder.value = order;
+}
+
+function setupTrackingStages(order) {
   const daysPassed = Math.floor((Date.now() - new Date(order.createdAt)) / 86400000);
-  const stageIndex = Math.min(daysPassed, stages.length - 1);
+  let stageIndex = 0;
+  const statusMap = {
+    'Order Placed': 0,
+    'pending': 0,
+    'Processing': 1,
+    'processing': 1,
+    'Packed': 2,
+    'Shipped': 3,
+    'Out For Delivery': 4,
+    'Delivered': 5,
+    'completed': 5
+  };
+  if (statusMap[order.status] !== undefined) {
+    stageIndex = statusMap[order.status];
+  } else {
+    stageIndex = Math.min(daysPassed, stages.length - 1);
+  }
+  
   order.currentStageIndex = stageIndex;
-  // Build timeline data (date for each stage)
   const baseDate = new Date(order.createdAt);
   order.timeline = stages.map((s, i) => {
     const d = new Date(baseDate);
     d.setDate(d.getDate() + i);
     return { stage: s, date: d };
   });
-  foundOrder.value = order;
 }
 
 const currentStageIndex = computed(() => {

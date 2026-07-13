@@ -8,11 +8,17 @@
         </span>
       </div>
 
+      <!-- Loading State -->
+      <div v-if="isLoading" class="flex flex-col items-center justify-center py-16">
+        <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-primary"></div>
+        <p class="text-sm text-gray-550 dark:text-gray-400 mt-4">Loading your orders...</p>
+      </div>
+
       <!-- Empty State -->
-      <div v-if="filteredOrders.length === 0" class="text-center py-16">
+      <div v-else-if="filteredOrders.length === 0" class="text-center py-16">
         <div class="text-5xl mb-4">📦</div>
         <h3 class="text-lg font-bold text-gray-950 dark:text-white">No orders found</h3>
-        <p class="text-sm text-gray-500 dark:text-gray-405 mt-1 max-w-sm mx-auto">You haven't placed any orders yet. Head to the store to start shopping!</p>
+        <p class="text-sm text-gray-550 dark:text-gray-405 mt-1 max-w-sm mx-auto">You haven't placed any orders yet. Head to the store to start shopping!</p>
         <RouterLink
           to="/shop"
           class="inline-block mt-5 px-6 py-3 bg-primary text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:bg-primary-dark transition duration-300 text-sm"
@@ -194,38 +200,58 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../../stores/authStore';
+import { useToastStore } from '../../stores/toastStore';
+import api from '../../services/api';
 
 const authStore = useAuthStore();
+const toastStore = useToastStore();
 const router = useRouter();
 
 const orders = ref([]);
 const selectedOrder = ref(null);
+const isLoading = ref(false);
 
 onMounted(() => {
   loadOrders();
 });
 
-function loadOrders() {
+async function loadOrders() {
+  isLoading.value = true;
   try {
-    orders.value = JSON.parse(localStorage.getItem('orders') || '[]');
+    const res = await api.get('/v1/auth/orders');
+    if (res.data && res.data.success) {
+      const rawOrders = res.data.data.data || res.data.data || [];
+      orders.value = rawOrders.map(o => ({
+        orderId: o.order_number || String(o.id),
+        createdAt: o.created_at,
+        totalAmount: Number(o.total || 0),
+        status: o.status || 'pending',
+        paymentStatus: o.payment_status || 'pending',
+        customerName: o.customer_name || '',
+        phone: o.customer_phone || '',
+        email: o.customer_email || '',
+        address: [o.address, o.thana, o.district, o.division].filter(Boolean).join(', '),
+        items: (o.items || []).map(item => ({
+          id: item.id,
+          name: item.product?.name || 'Unknown Product',
+          image: item.product?.image || '',
+          price: Number(item.price || 0),
+          quantity: item.quantity || 1
+        }))
+      }));
+    } else {
+      toastStore.show(res.data?.message || 'Failed to load orders', 'error');
+    }
   } catch (e) {
-    console.error('Failed to load orders', e);
-    orders.value = [];
+    console.error('Failed to load orders from API', e);
+    toastStore.show(e.response?.data?.message || 'Failed to load orders from server', 'error');
+  } finally {
+    isLoading.value = false;
   }
 }
 
 const filteredOrders = computed(() => {
-  const user = authStore.currentUser;
-  if (!user) return [];
-  
-  // Filter by userId, or matches email or phone
-  return orders.value
-    .filter(o => 
-      o.userId === user.id ||
-      (user.phone && o.phone === user.phone) ||
-      (user.email && o.email === user.email)
-    )
-    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  return [...orders.value].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 });
 
 function openOrderDetails(order) {
