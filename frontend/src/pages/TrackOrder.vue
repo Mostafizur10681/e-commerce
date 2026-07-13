@@ -28,6 +28,31 @@
   <!-- Result Section -->
   <section v-if="foundOrder" class="py-8">
     <div class="container mx-auto px-4 max-w-4xl space-y-8">
+      <!-- Progress Tracker (at the top) -->
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+        <div class="flex items-center justify-between md:justify-start md:space-x-4 overflow-x-auto">
+          <template v-for="(stage, idx) in stages" :key="stage">
+            <div class="flex flex-col items-center">
+              <div :class="[
+                'w-8 h-8 flex items-center justify-center rounded-full border-2',
+                idx < currentStageIndex ? 'bg-green-500 border-green-500 text-white' :
+                idx === currentStageIndex ? 'bg-primary border-primary text-white animate-pulse' :
+                'bg-gray-200 border-gray-300 text-gray-600'
+              ]">
+                <template v-if="idx < currentStageIndex">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                </template>
+                <template v-else>{{ idx + 1 }}</template>
+              </div>
+              <span class="mt-2 text-xs text-center whitespace-nowrap" :class="idx <= currentStageIndex ? 'text-gray-800 dark:text-gray-100 font-semibold' : 'text-gray-500 dark:text-gray-400'">
+                {{ stage }}
+              </span>
+            </div>
+            <div v-if="idx < stages.length - 1" class="flex-1 h-1 bg-gray-300 dark:bg-gray-600 mx-1 md:mx-2 min-w-[16px]"></div>
+          </template>
+        </div>
+      </div>
+
       <!-- Order Details Card -->
       <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
         <h2 class="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-100">Order Details</h2>
@@ -38,47 +63,6 @@
           <li><strong>Address:</strong> {{ foundOrder.address }}</li>
           <li><strong>Total:</strong> {{ formatCurrency(foundOrder.totalAmount) }}</li>
           <li><strong>Placed:</strong> {{ new Date(foundOrder.createdAt).toLocaleString() }}</li>
-        </ul>
-      </div>
-
-      <!-- Progress Tracker -->
-      <div class="flex flex-col md:flex-row items-center md:items-start gap-4">
-        <!-- Horizontal / Vertical Tracker -->
-        <div class="flex-1 w-full">
-          <div class="flex items-center justify-between md:justify-start md:space-x-4 overflow-x-auto">
-            <template v-for="(stage, idx) in stages" :key="stage">
-              <div class="flex flex-col items-center md:items-start">
-                <div :class="[
-                  'w-8 h-8 flex items-center justify-center rounded-full border-2',
-                  idx < currentStageIndex ? 'bg-green-500 border-green-500 text-white' :
-                  idx === currentStageIndex ? 'bg-primary border-primary text-white animate-pulse' :
-                  'bg-gray-200 border-gray-300 text-gray-600'
-                ]">
-                  <template v-if="idx < currentStageIndex">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
-                  </template>
-                  <template v-else>{{ idx + 1 }}</template>
-                </div>
-                <span class="mt-2 text-sm text-center md:text-left whitespace-nowrap" :class="idx <= currentStageIndex ? 'text-gray-800 dark:text-gray-100' : 'text-gray-500 dark:text-gray-400'">
-                  {{ stage }}
-                </span>
-              </div>
-              <div v-if="idx < stages.length - 1" class="flex-1 h-1 bg-gray-300 dark:bg-gray-600 mx-1 md:mx-2"></div>
-            </template>
-          </div>
-        </div>
-      </div>
-
-      <!-- Timeline -->
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4">
-        <h3 class="text-xl font-medium mb-4 text-gray-800 dark:text-gray-100">Tracking Timeline</h3>
-        <ul class="space-y-4">
-          <li v-for="(item, idx) in timeline" :key="idx" class="flex items-center">
-            <div class="w-3 h-3 rounded-full mr-3" :class="idx <= currentStageIndex ? 'bg-primary' : 'bg-gray-300 dark:bg-gray-600'"></div>
-            <div class="text-sm text-gray-700 dark:text-gray-300">
-              <strong>{{ item.stage }}</strong> – {{ new Date(item.date).toLocaleString() }}
-            </div>
-          </li>
         </ul>
       </div>
     </div>
