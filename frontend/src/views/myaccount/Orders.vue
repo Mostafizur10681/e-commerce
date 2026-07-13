@@ -53,7 +53,7 @@
                   class="inline-block px-2.5 py-1 rounded-full text-xs font-bold"
                   :class="getStatusBadgeClass(order.status)"
                 >
-                  {{ order.status }}
+                  {{ formatStatus(order.status) }}
                 </span>
               </td>
               <td class="py-4 px-4 text-right space-x-2 whitespace-nowrap">
@@ -279,20 +279,32 @@ function formatDate(isoString) {
   });
 }
 
-function getStatusBadgeClass(status) {
+function formatStatus(status) {
   const s = String(status || '').trim();
+  if (!s) return 'Pending';
+  return s.split(/[\s-_]+/)
+          .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+          .join(' ');
+}
+
+function getStatusBadgeClass(status) {
+  const s = String(status || '').trim().toLowerCase();
   switch (s) {
-    case 'Order Placed':
+    case 'order placed':
+    case 'order-placed':
+    case 'pending':
       return 'bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400';
-    case 'Processing':
+    case 'processing':
       return 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400';
-    case 'Packed':
+    case 'packed':
       return 'bg-orange-50 text-orange-700 dark:bg-orange-950/40 dark:text-orange-400';
-    case 'Shipped':
+    case 'shipped':
       return 'bg-indigo-50 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-400';
-    case 'Out For Delivery':
+    case 'out for delivery':
+    case 'out-for-delivery':
       return 'bg-purple-50 text-purple-700 dark:bg-purple-950/40 dark:text-purple-400';
-    case 'Delivered':
+    case 'delivered':
+    case 'completed':
       return 'bg-green-50 text-green-700 dark:bg-green-950/40 dark:text-green-400';
     default:
       return 'bg-gray-50 text-gray-700 dark:bg-gray-800 dark:text-gray-300';

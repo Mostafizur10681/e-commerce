@@ -94,17 +94,36 @@ import api from '../services/api';
 const route = useRoute();
 const authStore = useAuthStore();
 
-const stages = ['Order Placed', 'Processing', 'Packed', 'Shipped', 'Out For Delivery', 'Delivered'];
+const stages = ref(['Order Placed', 'Processing', 'Packed', 'Shipped', 'Out For Delivery', 'Delivered']);
+const activeStatuses = ref([]);
 const searchId = ref('');
 const errorMessage = ref('');
 const foundOrder = ref(null);
 
-onMounted(() => {
+onMounted(async () => {
+  await fetchActiveStatuses();
   if (route.query.orderId) {
     searchId.value = String(route.query.orderId);
     track();
   }
 });
+
+async function fetchActiveStatuses() {
+  try {
+    const res = await api.get('/v1/order-statuses/active');
+    if (res.data && res.data.success) {
+      activeStatuses.value = res.data.data;
+      const sequential = activeStatuses.value.filter(
+        s => s.name.toLowerCase() !== 'cancelled'
+      );
+      if (sequential.length > 0) {
+        stages.value = sequential.map(s => s.name);
+      }
+    }
+  } catch (e) {
+    console.error('Failed to load active order statuses from DB:', e);
+  }
+}
 
 function loadOrders() {
   try {
@@ -124,38 +143,36 @@ async function track() {
     return;
   }
 
-  // 1. Try to fetch from the API if authenticated
-  if (authStore.currentUser) {
-    try {
-      const res = await api.get(`/v1/auth/orders/${trimmedId}`);
-      if (res.data && res.data.success) {
-        const o = res.data.data;
-        const formattedOrder = {
-          orderId: o.order_number || String(o.id),
-          createdAt: o.created_at,
-          totalAmount: Number(o.total || 0),
-          status: o.status || 'pending',
-          paymentStatus: o.payment_status || 'pending',
-          customerName: o.customer_name || '',
-          phone: o.customer_phone || '',
-          email: o.customer_email || '',
-          address: [o.address, o.thana, o.district, o.division].filter(Boolean).join(', '),
-          items: (o.items || []).map(item => ({
-            id: item.id,
-            name: item.product?.name || 'Unknown Product',
-            image: item.product?.image || '',
-            price: Number(item.price || 0),
-            quantity: item.quantity || 1
-          }))
-        };
-        
-        setupTrackingStages(formattedOrder);
-        foundOrder.value = formattedOrder;
-        return;
-      }
-    } catch (e) {
-      console.error('Failed to track order via API, trying local storage...', e);
+  // 1. Try to fetch from the public tracking API first
+  try {
+    const res = await api.get(`/v1/orders/track/${trimmedId}`);
+    if (res.data && res.data.success) {
+      const o = res.data.data;
+      const formattedOrder = {
+        orderId: o.order_number || String(o.id),
+        createdAt: o.created_at,
+        totalAmount: Number(o.total || 0),
+        status: o.status || 'pending',
+        paymentStatus: o.payment_status || 'pending',
+        customerName: o.customer_name || '',
+        phone: o.customer_phone || '',
+        email: o.customer_email || '',
+        address: [o.address, o.thana, o.district, o.division].filter(Boolean).join(', '),
+        items: (o.items || []).map(item => ({
+          id: item.id,
+          name: item.product?.name || 'Unknown Product',
+          image: item.product?.image || '',
+          price: Number(item.price || 0),
+          quantity: item.quantity || 1
+        }))
+      };
+      
+      setupTrackingStages(formattedOrder);
+      foundOrder.value = formattedOrder;
+      return;
     }
+  } catch (e) {
+    console.error('Failed to track order via API, trying local fallback...', e);
   }
 
   // 2. Fallback to localStorage if guest or API failed
@@ -171,28 +188,31 @@ async function track() {
 }
 
 function setupTrackingStages(order) {
-  const daysPassed = Math.floor((Date.now() - new Date(order.createdAt)) / 86400000);
-  let stageIndex = 0;
-  const statusMap = {
-    'Order Placed': 0,
-    'pending': 0,
-    'Processing': 1,
-    'processing': 1,
-    'Packed': 2,
-    'Shipped': 3,
-    'Out For Delivery': 4,
-    'Delivered': 5,
-    'completed': 5
-  };
-  if (statusMap[order.status] !== undefined) {
-    stageIndex = statusMap[order.status];
-  } else {
-    stageIndex = Math.min(daysPassed, stages.length - 1);
+  const normStatus = String(order.status || '').toLowerCase().trim();
+  
+  // Find index in stages.value dynamically
+  let stageIndex = stages.value.findIndex(
+    s => s.toLowerCase() === normStatus || s.toLowerCase().replace(/[\s_]+/g, '-') === normStatus
+  );
+  
+  // Aliases fallback
+  if (stageIndex === -1) {
+    if (normStatus === 'pending') {
+      stageIndex = stages.value.findIndex(s => s.toLowerCase() === 'order placed' || s.toLowerCase() === 'pending');
+    } else if (normStatus === 'completed') {
+      stageIndex = stages.value.findIndex(s => s.toLowerCase() === 'delivered' || s.toLowerCase() === 'completed');
+    }
+  }
+  
+  // Fallback to days passed
+  if (stageIndex === -1) {
+    const daysPassed = Math.floor((Date.now() - new Date(order.createdAt)) / 86400000);
+    stageIndex = Math.min(daysPassed, stages.value.length - 1);
   }
   
   order.currentStageIndex = stageIndex;
   const baseDate = new Date(order.createdAt);
-  order.timeline = stages.map((s, i) => {
+  order.timeline = stages.value.map((s, i) => {
     const d = new Date(baseDate);
     d.setDate(d.getDate() + i);
     return { stage: s, date: d };
