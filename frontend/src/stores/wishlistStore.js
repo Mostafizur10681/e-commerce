@@ -1,52 +1,91 @@
 import { defineStore } from 'pinia';
+import api from '../services/api';
 import { useAuthStore } from './authStore';
 
 export const useWishlistStore = defineStore('wishlist', {
   state: () => ({
-    items: [] // array of product objects
+    items: [], // array of product objects
+    wishlistRecords: [] // array of raw database wishlist records: { id, user_id, product_id, product }
   }),
   actions: {
-    loadWishlist() {
+    async loadWishlist() {
       const authStore = useAuthStore();
-      const userId = authStore.currentUser ? authStore.currentUser.id : 'guest';
-      try {
-        const data = localStorage.getItem('wishlist_' + userId);
-        this.items = data ? JSON.parse(data) : [];
-      } catch (e) {
-        console.error('Failed to load wishlist', e);
+      if (!authStore.currentUser) {
         this.items = [];
+        this.wishlistRecords = [];
+        return;
+      }
+      try {
+        const res = await api.get('/customer/wishlist');
+        if (res.data && res.data.success) {
+          const list = res.data.data || [];
+          this.wishlistRecords = list;
+          this.items = list.map(record => {
+            const p = record.product;
+            if (!p) return null;
+            return {
+              id: p.id,
+              name: p.name,
+              category: p.category ? p.category.name : 'Grocery',
+              price: p.sale_price ? parseFloat(p.sale_price) : parseFloat(p.price),
+              originalPrice: p.sale_price ? parseFloat(p.price) : null,
+              unit: p.unit || '1 kg',
+              image: p.image || 'https://picsum.photos/seed/placeholder/400/400',
+              images: p.images && p.images.length ? p.images : [p.image || 'https://picsum.photos/seed/placeholder/400/400'],
+              rating: p.rating ? parseFloat(p.rating) : 5.0,
+              stock: p.stock,
+              attributes: p.attributes || []
+            };
+          }).filter(Boolean);
+        }
+      } catch (e) {
+        console.error('Failed to load wishlist from server', e);
       }
     },
-    persist() {
+    async toggleWishlist(product) {
       const authStore = useAuthStore();
-      const userId = authStore.currentUser ? authStore.currentUser.id : 'guest';
-      localStorage.setItem('wishlist_' + userId, JSON.stringify(this.items));
-    },
-    toggleWishlist(product) {
-      this.loadWishlist();
-      const idx = this.items.findIndex(p => p.id === product.id);
-      let added = false;
-      if (idx > -1) {
-        this.items.splice(idx, 1);
-      } else {
-        this.items.push(product);
-        added = true;
+      if (!authStore.currentUser) {
+        return false;
       }
-      this.persist();
-      return added;
+      const record = this.wishlistRecords.find(r => r.product_id === product.id);
+      if (record) {
+        // Remove it
+        await this.removeFromWishlist(product.id);
+        return false;
+      } else {
+        // Add it
+        try {
+          const res = await api.post('/customer/wishlist', { product_id: product.id });
+          if (res.data && res.data.success) {
+            await this.loadWishlist();
+            return true;
+          }
+        } catch (e) {
+          console.error('Failed to add to wishlist', e);
+        }
+      }
+      return false;
     },
     isInWishlist(productId) {
-      this.loadWishlist();
-      return this.items.some(p => p.id === productId);
+      return this.wishlistRecords.some(r => r.product_id === productId);
     },
-    removeFromWishlist(productId) {
-      this.loadWishlist();
-      this.items = this.items.filter(p => p.id !== productId);
-      this.persist();
+    async removeFromWishlist(productId) {
+      const record = this.wishlistRecords.find(r => r.product_id === productId);
+      if (record) {
+        try {
+          const res = await api.delete(`/customer/wishlist/${record.id}`);
+          if (res.data && res.data.success) {
+            this.wishlistRecords = this.wishlistRecords.filter(r => r.id !== record.id);
+            this.items = this.items.filter(p => p.id !== productId);
+          }
+        } catch (e) {
+          console.error('Failed to remove from wishlist', e);
+        }
+      }
     },
     clearWishlist() {
       this.items = [];
-      this.persist();
+      this.wishlistRecords = [];
     }
   }
 });
