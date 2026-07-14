@@ -718,7 +718,7 @@ function decreaseQty() {
 function addToCart() {
   if (!product.value) return;
   for (let i = 0; i < quantity.value; i++) {
-    cartStore.addToCart(product.value);
+    cartStore.addToCart(product.value, selectedAttributes.value);
   }
   toast.show(`${quantity.value} item(s) added to cart`);
   quantity.value = 1;
@@ -726,7 +726,7 @@ function addToCart() {
 
 function buyNow() {
   if (!product.value) return;
-  cartStore.addToCart(product.value);
+  cartStore.addToCart(product.value, selectedAttributes.value);
   toast.show('Product added to cart');
   router.push({ name: 'Checkout' });
 }

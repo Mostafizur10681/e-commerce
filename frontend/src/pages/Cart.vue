@@ -19,24 +19,31 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="item in cartItems" :key="item.product.id" class="border-b border-gray-200 dark:border-gray-700">
+          <tr v-for="item in cartItems" :key="item.id || item.product.id" class="border-b border-gray-200 dark:border-gray-700">
             <td class="p-2 flex items-center gap-4">
               <img :src="item.product.image" :alt="item.product.name" class="w-16 h-16 object-cover rounded" />
-              <span class="font-medium" v-text="item.product.name"></span>
+              <div>
+                <span class="font-medium" v-text="item.product.name"></span>
+                <div v-if="item.selectedAttributes && Object.keys(item.selectedAttributes).length > 0" class="text-xs text-gray-500 mt-1">
+                  <span v-for="(val, name) in item.selectedAttributes" :key="name" class="mr-2.5 inline-block">
+                    <span class="font-semibold capitalize">{{ name }}:</span> {{ val }}
+                  </span>
+                </div>
+              </div>
             </td>
             <td class="p-2">৳{{ item.product.price }}</td>
             <td class="p-2 text-center">
-              <button @click="decrease(item.product.id)" class="px-2 py-1 bg-gray-200 dark:bg-gray-600 rounded-l">
+              <button @click="decrease(item.id || item.product.id)" class="px-2 py-1 bg-gray-200 dark:bg-gray-600 rounded-l">
                 -
               </button>
               <span class="px-3">{{ item.quantity }}</span>
-              <button @click="increase(item.product.id)" class="px-2 py-1 bg-gray-200 dark:bg-gray-600 rounded-r">
+              <button @click="increase(item.id || item.product.id)" class="px-2 py-1 bg-gray-200 dark:bg-gray-600 rounded-r">
                 +
               </button>
             </td>
             <td class="p-2 text-right">৳{{ (item.product.price * item.quantity).toFixed(2) }}</td>
             <td class="p-2 text-center">
-              <button @click="remove(item.product.id)" class="text-red-600 hover:underline">Remove</button>
+              <button @click="remove(item.id || item.product.id)" class="text-red-600 hover:underline">Remove</button>
             </td>
           </tr>
         </tbody>
@@ -65,16 +72,16 @@ const toast = useToastStore();
 const cartItems = computed(() => cartStore.items);
 const totalPrice = computed(() => cartStore.totalPrice);
 
-function increase(productId) {
-  cartStore.increaseQty(productId);
+function increase(itemId) {
+  cartStore.increaseQty(itemId);
   toast.show('Quantity increased');
 }
-function decrease(productId) {
-  cartStore.decreaseQty(productId);
+function decrease(itemId) {
+  cartStore.decreaseQty(itemId);
   toast.show('Quantity decreased');
 }
-function remove(productId) {
-  cartStore.removeFromCart(productId);
+function remove(itemId) {
+  cartStore.removeFromCart(itemId);
   toast.show('Item removed from cart');
 }
 </script>

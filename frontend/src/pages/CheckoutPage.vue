@@ -207,7 +207,12 @@
               />
               <div class="flex-1 min-w-0">
                 <p class="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate">{{ item.product.name }}</p>
-                <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">৳{{ item.product.price.toFixed(2) }} each</p>
+                <div v-if="item.selectedAttributes && Object.keys(item.selectedAttributes).length > 0" class="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5 flex flex-wrap gap-1">
+                  <span v-for="(val, name) in item.selectedAttributes" :key="name" class="bg-gray-50 dark:bg-gray-800/80 px-1.5 py-0.5 rounded capitalize border border-gray-100 dark:border-gray-700/50">
+                    {{ name }}: {{ val }}
+                  </span>
+                </div>
+                <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">৳{{ item.product.price.toFixed(2) }} each</p>
               </div>
               <div class="flex flex-col items-end gap-1 flex-shrink-0">
                 <span class="text-xs px-2 py-0.5 bg-gray-100 dark:bg-gray-800 rounded-full text-gray-600 dark:text-gray-300 font-medium">
@@ -366,7 +371,8 @@ const placeOrder = async () => {
       address: form.value.address,
       items: cartItems.value.map(item => ({
         product_id: item.product.id,
-        quantity: item.quantity
+        quantity: item.quantity,
+        attributes: item.selectedAttributes || null
       }))
     };
 

@@ -33,118 +33,135 @@
     <div class="container mx-auto px-4 max-w-5xl space-y-6">
 
       <!-- ─── Fancy Step Tracker ─── -->
-      <div class="tracker-card">
-        <h2 class="tracker-heading">Shipment Progress</h2>
+      <div class="tracker-card" :class="{ 'cancelled-card': foundOrder.status === 'cancelled' }">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="tracker-heading" style="margin-bottom: 0;">Shipment Progress</h2>
+          <span v-if="foundOrder.status === 'cancelled'" class="cancelled-badge">Order Cancelled</span>
+        </div>
 
-        <!-- Desktop: horizontal row -->
-        <div class="stepper-desktop pt-5">
+        <!-- Desktop: horizontal row (show for all statuses, cancelled uses red theme) -->
+        <div :class="['stepper-desktop pt-5', { 'stepper-cancelled': foundOrder.status === 'cancelled' }]">
           <template v-for="(stage, idx) in stages" :key="stage">
             <div class="step-col">
               <!-- Bubble -->
-              <div :class="['step-bubble', stepState(idx)]">
-                <span v-if="idx === currentStageIndex" class="pulse-ring"></span>
+              <div :class="['step-bubble', isCancelled ? 'cancelled-step' : stepState(idx)]">
+                <span v-if="idx === currentStageIndex && !isCancelled" class="pulse-ring"></span>
 
-                <!-- ── ORDER PLACED ── -->
+                <!-- ── ORDER PLACED (Calendar/Clock/Receipt Style) ── -->
                 <svg v-if="isStage(stage,'order placed') || isStage(stage,'pending')"
-                     class="anim-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                     stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                  <!-- bag body swings -->
-                  <g class="bag-swing">
-                    <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
-                    <line x1="3" y1="6" x2="21" y2="6"/>
-                    <path d="M16 10a4 4 0 01-8 0"/>
-                  </g>
+                     class="envato-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <!-- Blue background board/paper structure -->
+                  <rect x="14" y="8" width="36" height="46" rx="4" class="icon-dark-stroke" stroke-width="3" fill="#ffffff" />
+                  <!-- Red header clip -->
+                  <path d="M22 6h20v8H22z" class="icon-red-fill icon-dark-stroke" stroke-width="3" />
+                  <!-- Writing lines on paper -->
+                  <line x1="20" y1="24" x2="44" y2="24" class="icon-dark-stroke" stroke-width="2.5" stroke-linecap="round" />
+                  <line x1="20" y1="32" x2="40" y2="32" class="icon-dark-stroke" stroke-width="2.5" stroke-linecap="round" />
+                  <line x1="20" y1="40" x2="34" y2="40" class="icon-dark-stroke" stroke-width="2.5" stroke-linecap="round" />
+                  <!-- A pulsing check mark in red -->
+                  <path d="M42 36 l3 3 l7 -7" class="icon-red-stroke icon-draw-line" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
 
-                <!-- ── PROCESSING ── -->
+                <!-- ── PROCESSING (24 Hours Call/Support Icon) ── -->
                 <svg v-else-if="isStage(stage,'processing')"
-                     class="anim-icon gear-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                     stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="12" r="3"/>
-                  <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+                     class="envato-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <!-- 24 Hours clock ring -->
+                  <circle cx="32" cy="32" r="22" class="icon-dark-stroke icon-spin-slow" stroke-width="3" stroke-dasharray="10 5" />
+                  <!-- Red telephone handset overlay -->
+                  <path d="M18 20c0-2 2-4 5-4h4l3 7-2 3c3 4 6 7 10 10l3-2 7 3v4c0 3-2 5-5 5-14 0-25-11-25-25z" class="icon-red-fill icon-dark-stroke" stroke-width="3" stroke-linejoin="round" />
+                  <!-- Clock hand inside -->
+                  <line x1="32" y1="32" x2="32" y2="22" class="icon-dark-stroke" stroke-width="2.5" stroke-linecap="round" />
+                  <line x1="32" y1="32" x2="40" y2="32" class="icon-dark-stroke" stroke-width="2.5" stroke-linecap="round" />
                 </svg>
 
-                <!-- ── PACKED ── -->
+                <!-- ── PACKED (Gift Box with Ribbon) ── -->
                 <svg v-else-if="isStage(stage,'packed')"
-                     class="anim-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                     stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                  <!-- box base stays fixed -->
-                  <path d="M3 9l9 5 9-5M12 22V14"/>
-                  <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
-                  <!-- lid bounces up -->
-                  <path class="box-lid" d="M3.27 6.96L12 12.01l8.73-5.05"/>
+                     class="envato-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <!-- Gift Box Container -->
+                  <rect x="12" y="24" width="40" height="30" rx="2" class="icon-dark-stroke" stroke-width="3" fill="#ffffff" />
+                  <!-- Red Ribbon Vertical -->
+                  <rect x="28" y="24" width="8" height="30" class="icon-red-fill icon-dark-stroke" stroke-width="3" />
+                  <!-- Box Lid -->
+                  <rect x="9" y="18" width="46" height="8" rx="1" class="icon-dark-stroke" stroke-width="3" fill="#ffffff" />
+                  <!-- Red Ribbon Loop top (Lid Ribbon) -->
+                  <path d="M24 18c0-5 4-8 8-8s8 3 8 8" class="icon-red-stroke icon-dark-stroke icon-ribbon-bounce" stroke-width="3" stroke-linecap="round" />
                 </svg>
 
-                <!-- ── SHIPPED ── -->
+                <!-- ── SHIPPED (Red Delivery Truck with 24h Sign) ── -->
                 <svg v-else-if="isStage(stage,'shipped')"
-                     class="anim-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                     stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                  <!-- truck body bounces slightly -->
-                  <g class="truck-bounce">
-                    <rect x="1" y="3" width="15" height="13" rx="1"/>
-                    <path d="M16 8h4l3 3v5h-7V8z"/>
-                    <!-- wheels spin -->
-                    <circle class="wheel-spin" cx="5.5" cy="18.5" r="2.5"/>
-                    <circle class="wheel-spin" cx="18.5" cy="18.5" r="2.5"/>
-                    <!-- wheel hubs -->
-                    <circle class="wheel-hub" cx="5.5" cy="18.5" r="0.8" fill="currentColor" stroke="none"/>
-                    <circle class="wheel-hub" cx="18.5" cy="18.5" r="0.8" fill="currentColor" stroke="none"/>
+                     class="envato-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <g class="icon-truck-drive">
+                    <!-- Road Line -->
+                    <line x1="6" y1="52" x2="58" y2="52" class="icon-dark-stroke" stroke-width="3" stroke-linecap="round" />
+                    <!-- Truck Body (Red Cab & Container) -->
+                    <!-- Container Back -->
+                    <rect x="10" y="16" width="28" height="26" rx="2" class="icon-dark-stroke" stroke-width="3" fill="#ffffff" />
+                    <!-- Red Cab Front -->
+                    <path d="M38 24h10l6 8v10H38V24z" class="icon-red-fill icon-dark-stroke" stroke-width="3" stroke-linejoin="round" />
+                    <!-- Cab Window -->
+                    <path d="M44 24h4l4 6h-8v-6z" class="icon-dark-stroke" stroke-width="2.5" fill="#ffffff" />
+                    <!-- Wheels -->
+                    <circle cx="20" cy="46" r="6" class="icon-dark-stroke" stroke-width="3" fill="#ffffff" />
+                    <circle cx="20" cy="46" r="2" class="icon-dark-fill" />
+                    <circle cx="44" cy="46" r="6" class="icon-dark-stroke" stroke-width="3" fill="#ffffff" />
+                    <circle cx="44" cy="46" r="2" class="icon-dark-fill" />
                   </g>
                 </svg>
 
-                <!-- ── OUT FOR DELIVERY ── -->
+                <!-- ── OUT FOR DELIVERY (Fast Motorcycle Delivery / Map Route) ── -->
                 <svg v-else-if="isStage(stage,'delivery')"
-                     class="anim-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                     stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="12" r="10"/>
-                  <!-- hour hand ticks -->
-                  <line class="clock-hour" x1="12" y1="12" x2="12" y2="7"/>
-                  <!-- minute hand spins -->
-                  <line class="clock-minute" x1="12" y1="12" x2="16" y2="12"/>
-                  <circle cx="12" cy="12" r="0.8" fill="currentColor" stroke="none"/>
+                     class="envato-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <!-- Map pin route lines -->
+                  <path d="M12 40c0-10 16-16 16-24" class="icon-dark-stroke icon-route-dash" stroke-width="3" stroke-linecap="round" stroke-dasharray="6 6" />
+                  <!-- Red Map Pin -->
+                  <g class="icon-pin-drop">
+                    <path d="M32 6c-8 0-14 6-14 14 0 10 14 24 14 24s14-14 14-24c0-8-6-14-14-14z" class="icon-red-fill icon-dark-stroke" stroke-width="3" />
+                    <circle cx="32" cy="20" r="5" fill="#ffffff" class="icon-dark-stroke" stroke-width="2" />
+                  </g>
+                  <!-- Ground lines -->
+                  <line x1="10" y1="52" x2="54" y2="52" class="icon-dark-stroke" stroke-width="3" stroke-linecap="round" />
                 </svg>
 
-                <!-- ── DELIVERED / COMPLETED ── -->
+                <!-- ── DELIVERED / COMPLETED (Hands holding package or verified badge) ── -->
                 <svg v-else-if="isStage(stage,'delivered') || isStage(stage,'completed')"
-                     class="anim-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                     stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                  <g class="check-pop">
-                    <path class="check-circle" d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
-                    <polyline class="check-mark" points="22 4 12 14.01 9 11.01"/>
-                  </g>
+                     class="envato-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <!-- Completed Badge Circle -->
+                  <circle cx="32" cy="32" r="24" class="icon-dark-stroke icon-badge-rotate" stroke-width="3" stroke-dasharray="6 4" fill="#ffffff" />
+                  <!-- Red inner circle -->
+                  <circle cx="32" cy="32" r="18" class="icon-red-fill icon-dark-stroke" stroke-width="2.5" />
+                  <!-- White / Dark check mark -->
+                  <path d="M22 32l7 7 14-14" stroke="#ffffff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" class="icon-draw-check" />
                 </svg>
 
                 <!-- ── CANCELLED ── -->
                 <svg v-else-if="isStage(stage,'cancelled')"
-                     class="anim-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                     stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="12" r="10"/>
-                  <line class="x-shake" x1="15" y1="9" x2="9" y2="15"/>
-                  <line class="x-shake" x1="9" y1="9" x2="15" y2="15"/>
+                     class="envato-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="32" cy="32" r="22" class="icon-dark-stroke" stroke-width="3" fill="#ffffff" />
+                  <line x1="20" y1="20" x2="44" y2="44" class="icon-red-stroke icon-dark-stroke" stroke-width="4" stroke-linecap="round" />
+                  <line x1="44" y1="20" x2="20" y2="44" class="icon-red-stroke icon-dark-stroke" stroke-width="4" stroke-linecap="round" />
                 </svg>
 
                 <!-- ── FALLBACK ── -->
-                <svg v-else class="anim-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                     stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="12" r="10"/>
-                  <text x="12" y="16.5" text-anchor="middle" font-size="9" fill="currentColor" stroke="none">{{ idx+1 }}</text>
+                <svg v-else class="envato-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="32" cy="32" r="22" class="icon-dark-stroke" stroke-width="3" fill="#ffffff" />
+                  <text x="32" y="38" text-anchor="middle" font-size="18" font-weight="bold" class="icon-dark-fill">{{ idx+1 }}</text>
                 </svg>
 
               </div>
               <!-- Label -->
-              <span :class="['step-label', idx <= currentStageIndex ? 'label-on' : 'label-off']">
+              <span :class="['step-label', isCancelled ? 'label-cancelled' : (idx <= currentStageIndex ? 'label-on' : 'label-off')]">
                 {{ stage }}
               </span>
             </div>
             <!-- Connector -->
-            <div v-if="idx < stages.length - 1" class="connector">
-              <div :class="['connector-bar', idx < currentStageIndex ? 'filled' : '']"></div>
+            <div v-if="idx < stages.length - 1" :class="['connector', { 'connector-cancelled': isCancelled }]">
+              <div :class="['connector-bar', isCancelled ? 'filled-cancelled' : (idx < currentStageIndex ? 'filled' : '')]"></div>
             </div>
           </template>
         </div>
 
         <!-- Mobile: vertical list -->
-        <ol class="stepper-mobile">
+        <ol :class="['stepper-mobile', { 'stepper-cancelled': isCancelled }]">
           <li v-for="(stage, idx) in stages" :key="'m'+stage"
               :class="['mobile-step', stepState(idx)]">
             <div class="mobile-dot">
@@ -159,6 +176,18 @@
             </div>
           </li>
         </ol>
+
+        <!-- Cancelled Realistic Design -->
+        <div v-if="foundOrder.status === 'cancelled'" class="cancelled-illustration-box">
+          <div class="cancelled-graphic-wrap">
+            <svg class="cancelled-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="50" cy="50" r="40" stroke="#f87171" stroke-width="5" stroke-dasharray="10 5" fill="#fef2f2" class="dark:fill-red-950/20" />
+              <path d="M35 35 L65 65 M65 35 L35 65" stroke="#ef4444" stroke-width="8" stroke-linecap="round" class="cancelled-cross-anim" />
+            </svg>
+          </div>
+          <h3 class="cancelled-title">Order #{{ foundOrder.orderId }} was Cancelled</h3>
+          <p class="cancelled-desc">This order has been cancelled and cannot be tracked further. If you think this is a mistake, please reach out to our customer support team.</p>
+        </div>
       </div>
 
       <!-- ─── Order Details ─── -->
@@ -316,6 +345,7 @@ function setupTrackingStages(order) {
 
 const currentStageIndex = computed(() => foundOrder.value ? foundOrder.value.currentStageIndex : 0);
 const timeline = computed(() => foundOrder.value ? foundOrder.value.timeline : []);
+const isCancelled = computed(() => foundOrder.value?.status === 'cancelled');
 
 function formatCurrency(value) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'BDT' }).format(value);
@@ -356,162 +386,191 @@ function formatCurrency(value) {
 .dark .connector { background: #334155; }
 .connector-bar { height: 100%; width: 0; background: linear-gradient(90deg, #16a34a, #4ade80); border-radius: 9px; transition: width 1s ease; }
 .connector-bar.filled { width: 100%; }
+.connector.connector-cancelled { background: #fee2e2; }
+.connector-bar.filled-cancelled { background: linear-gradient(90deg, #ef4444, #f87171) !important; width: 100%; }
 
 /* ─── Step Bubble ─── */
 .step-bubble {
   position: relative;
-  width: 58px; height: 58px;
+  width: 72px; height: 72px;
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s;
+  background: #ffffff;
+  border: 3px solid #1e293b;
+  --box-shadow: 0 6px 0 #1e293b;
+  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  padding: 8px;
+}
+.dark .step-bubble {
+  background: #1e293b;
+  border-color: #f1f5f9;
+  box-shadow: 0 6px 0 #f1f5f9;
 }
 .step-bubble.pending {
-  background: #f1f5f9; border: 2px solid #e2e8f0; color: #94a3b8;
+  opacity: 0.65;
+  filter: grayscale(80%);
 }
-.dark .step-bubble.pending { background: #0f172a; border-color: #334155; color: #475569; }
-
 .step-bubble.done {
-  background: linear-gradient(135deg, #15803d, #22c55e);
-  border: 2px solid #16a34a; color: #fff;
-  box-shadow: 0 4px 16px rgba(34,197,94,0.35);
+  transform: translateY(-2px);
+  --box-shadow: 0 8px 0 #1e293b;
 }
+/* .dark .step-bubble.done {
+  box-shadow: 0 8px 0 #f1f5f9;
+} */
 .step-bubble.active {
-  background: linear-gradient(135deg, #166534, #16a34a, #22c55e);
-  border: 2px solid #15803d; color: #fff;
-  box-shadow: 0 6px 24px rgba(34,197,94,0.5);
-  transform: scale(1.15);
+  transform: scale(1.18) translateY(-4px);
+  border-color: green;
+}
+.dark .step-bubble.active {
+  border-color: green;
+}
+
+/* ── Cancelled state: all steps turn red ── */
+.stepper-cancelled .step-bubble,
+.step-bubble.cancelled-step {
+  border-color: #ef4444 !important;
+  background: #fff0f0 !important;
+}
+.dark .stepper-cancelled .step-bubble,
+.dark .step-bubble.cancelled-step {
+  border-color: #ef4444 !important;
+  background: #2d1515 !important;
+}
+.label-cancelled {
+  color: #ef4444 !important;
+  font-weight: 700;
 }
 
 /* Pulse ring */
 .pulse-ring {
-  position: absolute; inset: -7px;
+  position: absolute; inset: -9px;
   border-radius: 50%;
-  border: 3px solid #4ade80;
+  border: 3px solid green;
   animation: pulseRing 1.8s ease-out infinite;
   pointer-events: none;
 }
 @keyframes pulseRing {
   0%   { transform: scale(1); opacity: 0.9; }
-  60%  { transform: scale(1.5); opacity: 0; }
-  100% { transform: scale(1.5); opacity: 0; }
+  60%  { transform: scale(1.3); opacity: 0; }
+  100% { transform: scale(1.3); opacity: 0; }
 }
 
 /* Step label */
 .step-label {
-  margin-top: 0.6rem;
-  font-size: 0.68rem;
+  margin-top: 1rem;
+  font-size: 0.72rem;
   text-align: center;
-  max-width: 72px;
-  line-height: 1.3;
+  max-width: 80px;
+  line-height: 1.4;
   transition: color 0.3s;
+  font-weight: 700;
+  color: #64748b;
 }
-.label-on  { color: #15803d; font-weight: 700; }
-.dark .label-on { color: #4ade80; }
-.label-off { color: #94a3b8; }
-
-/* ─── Animated Icons ─── */
-.anim-icon { width: 26px; height: 26px; flex-shrink: 0; position: relative; z-index: 1; }
-
-/* Shopping Bag – pendulum swing */
-.bag-swing {
-  transform-origin: 12px 4px;
-  transform-box: fill-box;
-  animation: bagSwing 2s ease-in-out infinite;
-}
-@keyframes bagSwing {
-  0%, 100% { transform: rotate(-8deg); }
-  50%       { transform: rotate(8deg);  }
+.label-on  { color: #1e293b; }
+.dark .label-on { color: #f1f5f9; }
+.step-bubble.active + .step-label {
+  color: green;
 }
 
-/* Gear – continuous spin */
-.gear-spin {
-  animation: gearSpin 2s linear infinite;
-  transform-origin: center;
-  transform-box: fill-box;
+/* ─── Envato Styled Illustrated Icons ─── */
+.envato-icon {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
 }
-.step-bubble.pending .gear-spin { animation-duration: 4s; opacity: 0.7; }
-.step-bubble.done    .gear-spin { animation-duration: 3s; }
-@keyframes gearSpin {
+
+/* Shared vector strokes and fills */
+.icon-dark-stroke {
+  stroke: #1e293b;
+  stroke-width: 3.5px;
+  fill: none;
+}
+.dark .icon-dark-stroke {
+  stroke: #f1f5f9;
+}
+.icon-dark-fill {
+  fill: #1e293b;
+}
+.dark .icon-dark-fill {
+  fill: #f1f5f9;
+}
+.icon-red-fill {
+  fill: green;
+}
+.icon-red-stroke {
+  stroke: green;
+  stroke-width: 3.5px;
+  fill: none;
+}
+
+/* Custom animations for each icon */
+
+/* 1. Paper / Calendar draw mark animation */
+.icon-draw-line {
+  stroke-dasharray: 20;
+  stroke-dashoffset: 20;
+  animation: drawLine 2s ease-in-out infinite alternate;
+}
+@keyframes drawLine {
+  to { stroke-dashoffset: 0; }
+}
+
+/* 2. Slow spin for clock ring / gear */
+.icon-spin-slow {
+  animation: spinSlow 6s linear infinite;
+  transform-origin: 32px 32px;
+}
+@keyframes spinSlow {
   to { transform: rotate(360deg); }
 }
 
-/* Box lid – bounce up/down */
-.box-lid {
-  transform-origin: center;
-  transform-box: fill-box;
-  animation: lidBounce 1.5s ease-in-out infinite;
+/* 3. Ribbon Bounce */
+.icon-ribbon-bounce {
+  animation: ribbonBounce 1.5s ease-in-out infinite alternate;
+  transform-origin: 32px 18px;
 }
-@keyframes lidBounce {
-  0%, 100% { transform: translateY(0px); }
-  50%       { transform: translateY(-3px); }
+@keyframes ribbonBounce {
+  0% { transform: scaleY(1); }
+  100% { transform: scaleY(1.2) translateY(-1px); }
 }
 
-/* Truck – bounce body + spin wheels */
-.truck-bounce {
-  animation: truckBounce 0.8s ease-in-out infinite;
-  transform-box: fill-box;
-  transform-origin: center bottom;
+/* 4. Truck Drive Bounce */
+.icon-truck-drive {
+  animation: truckDrive 1.8s ease-in-out infinite;
 }
-@keyframes truckBounce {
-  0%, 100% { transform: translateY(0px); }
-  50%       { transform: translateY(-1.5px); }
+@keyframes truckDrive {
+  0%, 100% { transform: translateX(0) translateY(0); }
+  25% { transform: translateY(-2px); }
+  50% { transform: translateX(2px) translateY(0); }
+  75% { transform: translateY(-1px); }
 }
-.wheel-spin {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: wheelSpin 0.6s linear infinite;
+
+/* 5. Pin drop / bounce */
+.icon-pin-drop {
+  animation: pinDrop 1.6s ease-in-out infinite alternate;
+  transform-origin: 32px 44px;
 }
-@keyframes wheelSpin {
+@keyframes pinDrop {
+  0% { transform: translateY(0) scaleY(1); }
+  100% { transform: translateY(-5px) scaleY(0.95); }
+}
+
+/* 6. Completed Badge rotating outline & checkmark */
+.icon-badge-rotate {
+  animation: badgeRotate 10s linear infinite;
+  transform-origin: 32px 32px;
+}
+@keyframes badgeRotate {
   to { transform: rotate(360deg); }
 }
-
-/* Clock – hour hand ticks, minute hand spins fast */
-.clock-hour {
-  transform-box: fill-box;
-  transform-origin: 12px 12px;
-  animation: hourTick 8s steps(12, end) infinite;
+.icon-draw-check {
+  stroke-dasharray: 40;
+  stroke-dashoffset: 40;
+  animation: drawCheckIcon 1.8s ease-in-out infinite;
 }
-@keyframes hourTick {
-  to { transform: rotate(360deg); }
-}
-.clock-minute {
-  transform-box: fill-box;
-  transform-origin: 12px 12px;
-  animation: minuteSpin 1.5s linear infinite;
-}
-@keyframes minuteSpin {
-  to { transform: rotate(360deg); }
-}
-
-/* Check pop – draws path + scales */
-.check-pop {
-  animation: checkPop 2s ease-in-out infinite;
-  transform-box: fill-box;
-  transform-origin: center;
-}
-@keyframes checkPop {
-  0%, 100% { transform: scale(1); }
-  50%       { transform: scale(1.08); }
-}
-.check-mark {
-  stroke-dasharray: 30;
-  stroke-dashoffset: 0;
-  animation: drawCheck 2s ease-in-out infinite;
-}
-@keyframes drawCheck {
-  0%        { stroke-dashoffset: 30; opacity: 0.5; }
-  40%, 100% { stroke-dashoffset: 0;  opacity: 1; }
-}
-
-/* X shake for cancelled */
-.x-shake {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: xShake 0.6s ease-in-out infinite alternate;
-}
-@keyframes xShake {
-  0%   { transform: rotate(-5deg); }
-  100% { transform: rotate(5deg);  }
+@keyframes drawCheckIcon {
+  0% { stroke-dashoffset: 40; }
+  70%, 100% { stroke-dashoffset: 0; }
 }
 
 /* ─── Mobile Stepper ─── */
@@ -566,5 +625,77 @@ function formatCurrency(value) {
 .detail-value { font-size: 0.9rem; color: #111827; font-weight: 500; }
 .dark .detail-value { color: #e2e8f0; }
 
+/* Cancelled Card specific layout */
+.cancelled-card {
+  border-color: #fee2e2;
+  background-color: #fffdfd;
+}
+.dark .cancelled-card {
+  border-color: #991b1b;
+  background-color: #1e1b1b;
+}
+
+.cancelled-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #ef4444;
+  background-color: #fee2e2;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  border: 1px solid #fca5a5;
+  text-transform: uppercase;
+}
+.dark .cancelled-badge {
+  color: #fca5a5;
+  background-color: #7f1d1d;
+  border-color: #991b1b;
+}
+
+.cancelled-illustration-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 2.5rem 1rem;
+}
+
+.cancelled-graphic-wrap {
+  width: 100px;
+  height: 100px;
+  margin-bottom: 1.5rem;
+}
+
+.cancelled-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.cancelled-cross-anim {
+  stroke-dasharray: 60;
+  stroke-dashoffset: 60;
+  animation: drawCross 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+@keyframes drawCross {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.cancelled-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #ef4444;
+  margin-bottom: 0.5rem;
+}
+
+.cancelled-desc {
+  max-width: 480px;
+  font-size: 0.875rem;
+  color: #6b7280;
+  line-height: 1.5;
+}
+.dark .cancelled-desc {
+  color: #9ca3af;
+}
 
 </style>
